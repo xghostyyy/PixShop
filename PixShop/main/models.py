@@ -41,6 +41,8 @@ class Item(models.Model):
                                         verbose_name='Категории')
     available = models.BooleanField(default=True, verbose_name='Видимость')
     quantity = models.IntegerField(default=1, verbose_name='Количество товара')
+
+    slug = models.SlugField(max_length=100, unique=True)
     
     class Meta:
         verbose_name = 'Товар'
