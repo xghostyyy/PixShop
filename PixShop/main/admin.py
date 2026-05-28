@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Category, Item, Status, Order, OrderItem
+from .models import User, Category, Item, Status, Order, Order_item
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
@@ -25,7 +25,7 @@ class CustomUserAdmin(UserAdmin):
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug',)
-    prepopulated_fields = {'slug': ('name',)}
+    list_display_links = ('slug',)
     list_editable = ('name',)
 
 @admin.register(Item)
@@ -38,7 +38,7 @@ class ItemAdmin(admin.ModelAdmin):
     display_categories.short_description = "Категории"
 
 class OrderItemInline(admin.TabularInline):
-    model = OrderItem
+    model = Order_item
     extra = 0
 
 @admin.register(Order)
