@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Item, Order, Order_item, Status
+from .forms import UserRegisterForm
+from django.contrib.auth import login
 
 def item_list(request):
     items = Item.objects.all()
@@ -67,3 +69,14 @@ def checkout(request):
 def order_conf(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     return render(request, 'main/order_conf.html', {'order', order})
+
+def register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('item_list')
+    else:
+        form = UserRegisterForm()
+    return render(request, 'main/register.html', {'form': form})
