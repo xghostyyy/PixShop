@@ -121,3 +121,7 @@ AUTH_USER_MODEL = 'main.User'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+LOGIN_REDIRECT_URL = 'item_list'
+LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'item_list'
