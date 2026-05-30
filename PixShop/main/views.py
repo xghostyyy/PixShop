@@ -80,3 +80,15 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request, 'main/register.html', {'form': form})
+
+def update_cart_item(request, item_id):
+    if request.method == 'POST':
+        quantity = int(request.POST.get('quantity', 0))
+        cart = request.session.get('cart', {})
+        if quantity > 0:
+            cart[str(item_id)] = quantity
+        else:
+            if str(item_id) in cart:
+                del cart[str(item_id)]
+        request.sessiom['cart'] = cart
+    return redirect('cart_detail')

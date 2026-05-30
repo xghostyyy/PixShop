@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Корзина — PixShop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'main/css/styles.css' %}">
+    <style>
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+        }
+        .cart-table th, .cart-table td {
+            border: 2px solid white;
+            padding: 10px;
+            text-align: left;
+        }
+        .cart-table th {
+            background: #1e3a8a;
+        }
+        .quantity-input {
+            width: 60px;
+            background: black;
+            border: 2px solid white;
+            color: white;
+            font-family: monospace;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="logo">
+            <h1>◢ PIXSHOP ◣</h1>
+            <p>retro // pixel // style</p>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'item_list' %}">🏠 ГЛАВНАЯ</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}">🚪 ВЫЙТИ ({{ user.email }})</a>
+            {% else %}
+                <a href="{% url 'login' %}">🔑 ВХОД</a>
+                <a href="{% url 'register' %}">📝 РЕГИСТРАЦИЯ</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <h2 style="font-size: 1rem;">🛒 КОРЗИНА</h2>
+
+    {% if cart_items %}
+        <table class="cart-table">
+            <thead>
+                <tr><th>Товар</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>
+            </thead>
+            <tbody>
+            {% for entry in cart_items %}
+                <tr>
+                    <td><a href="{% url 'item_detail' entry.item.id %}" style="color: white;">{{ entry.item.name|upper }}</a></td>
+                    <td>
+                        <form method="post" action="{% url 'update_cart_item' entry.item.id %}" style="display: flex; gap: 5px;">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="{{ entry.quantity }}" min="0" class="quantity-input">
+                            <button type="submit" class="btn-add" style="padding: 4px 8px;">🔄</button>
+                        </form>
+                    </td>
+                    <td>{{ entry.item.price }} ₽</td>
+                    <td>{{ entry.subtotal }} ₽</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <p style="text-align: right; font-size: 1rem; margin-top: 20px;">ИТОГО: {{ total }} ₽</p>
+        <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+            <a href="{% url 'item_list' %}" class="btn-add">⬅ ПРОДОЛЖИТЬ</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'checkout' %}" class="btn-add">✅ ОФОРМИТЬ ЗАКАЗ</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-add">🔑 ВОЙДИТЕ ДЛЯ ОФОРМЛЕНИЯ</a>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>🛒 КОРЗИНА ПУСТА</p>
+            <a href="{% url 'item_list' %}" class="btn-add">ПЕРЕЙТИ К ТОВАРАМ</a>
+        </div>
+    {% endif %}
+
+    <div class="footer">
+        <p>PIXSHOP © 2026</p>
+    </div>
+</div>
+</body>
+</html>
