@@ -251,35 +251,170 @@ body {
     margin-left: 10px;
 }
 
-/* ---------- КОРЗИНА ---------- */
+/* ===== КОРЗИНА: ЦЕНТРИРОВАНИЕ + КОМПАКТНОЕ ПОЛЕ ===== */
+
 .cart-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.7rem;
+    margin: 25px 0;
+    font-family: 'Press Start 2P', monospace;
 }
-.cart-table th, .cart-table td {
-    border: 2px solid white;
-    padding: 10px;
-    text-align: left;
+
+/* Заголовки и ячейки — центрируем всё, кроме первого столбца с названием товара */
+.cart-table th,
+.cart-table td {
+    border: 2px solid #ffffff;
+    padding: 18px 12px;
     vertical-align: middle;
+    text-align: center;          /* ← центрируем все ячейки */
 }
+
+/* Заголовки оставляем центрированными */
 .cart-table th {
     background: #1e3a8a;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
 }
-.cart-image {
-    width: 50px;
-    height: 50px;
-    object-fit: contain;
-    background: #222;
+
+/* Первый столбец (название товара) выравниваем влево, чтобы не «слипалось» с центром */
+.cart-table td:first-child,
+.cart-table th:first-child {
+    text-align: left;
 }
-.quantity-input {
-    width: 70px;
-    background: black;
-    border: 2px solid white;
+
+/* Ссылка на товар — подчёркнутая, без дополнительных отступов */
+.cart-item-name {
     color: white;
-    font-family: monospace;
+    text-decoration: none;
+    border-bottom: 1px dotted white;
+    font-size: 0.7rem;
+}
+.cart-item-name:hover {
+    color: #1e3a8a;
+    border-bottom-color: #1e3a8a;
+}
+
+/* ПОЛЕ КОЛИЧЕСТВА — тёмное, компактное, без стрелок */
+.quantity-input {
+    width: 65px;
+    background: #000000;         /* чёрный фон */
+    border: 2px solid #ffffff;   /* белая рамка */
+    color: #ffffff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.65rem;
     text-align: center;
-    padding: 4px;
+    padding: 6px 2px;
+    margin: 0 auto;
+    display: block;
+    appearance: textfield;       /* убираем стандартные стрелки в Firefox */
+}
+.quantity-input:focus {
+    outline: none;
+    border-color: #1e3a8a;
+}
+/* Убираем стрелки в Chrome, Safari, Edge */
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+    display: none;
+}
+
+/* Цены и суммы — жирный шрифт, моноширинный */
+.cart-price,
+.cart-subtotal {
+    font-weight: bold;
+    font-size: 0.7rem;
+    white-space: nowrap;
+}
+
+/* Итоговая строка */
+.cart-total-line {
+    text-align: right;
+    font-size: 0.9rem;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 3px solid #ffffff;
+}
+.cart-total-line strong {
+    margin-right: 10px;
+}
+#cart-total {
+    background: #1e3a8a;
+    padding: 4px 12px;
+    display: inline-block;
+}
+
+/* Кнопки под корзиной */
+.cart-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.cart-actions .btn-add {
+    flex: 1;
+    text-align: center;
+    font-size: 0.65rem;
+}
+
+/* Адаптивность: на узких экранах превращаем таблицу в карточки с подписями */
+@media (max-width: 750px) {
+    .cart-table,
+    .cart-table thead,
+    .cart-table tbody,
+    .cart-table tr,
+    .cart-table th,
+    .cart-table td {
+        display: block;
+    }
+    .cart-table thead {
+        display: none;
+    }
+    .cart-table tr {
+        margin-bottom: 25px;
+        border: 2px solid white;
+        background: #0a0a0a;
+    }
+    .cart-table td {
+        border: none;
+        border-bottom: 1px solid #333;
+        text-align: right;
+        padding: 14px 15px 14px 40%;
+        position: relative;
+    }
+    .cart-table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: 35%;
+        text-align: left;
+        font-weight: bold;
+        color: #1e3a8a;
+        font-size: 0.6rem;
+        white-space: normal;
+    }
+    /* Первый столбец на мобильных тоже переопределяем */
+    .cart-table td:first-child {
+        text-align: right;
+    }
+    .cart-table td:first-child:before {
+        content: attr(data-label);
+    }
+    .quantity-input {
+        width: 65px;
+        margin: 0;
+        display: inline-block;
+    }
+    .cart-price,
+    .cart-subtotal {
+        white-space: normal;
+    }
+    .cart-actions {
+        flex-direction: column;
+    }
+    .cart-total-line {
+        text-align: center;
+    }
 }
 
 /* Адаптивность */

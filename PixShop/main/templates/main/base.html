@@ -7,7 +7,6 @@
     <title>{% block title %}PixShop{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'main/css/styles.css' %}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -17,7 +16,7 @@
             <h1>◢ PIXSHOP ◣</h1>
             <p>retro // pixel // style</p>
         </div>
-        <button class="burger-btn" aria-label="Меню">☰</button>
+        <button class="burger-btn" type="button" aria-label="Menu">☰</button>
         <div class="nav-links">
             <a href="{% url 'item_list' %}">ГЛАВНАЯ</a>
             <a href="{% url 'catalog' %}">КАТАЛОГ</a>
@@ -48,21 +47,26 @@
 </div>
 
 <script>
-    // Обновление счётчика корзины
     function updateCartCount() {
         fetch('/api/cart-count/')
             .then(response => response.json())
             .then(data => {
                 const countSpan = document.getElementById('cart-count');
                 if (countSpan) countSpan.textContent = data.count;
-            });
+            })
+            .catch(error => console.error('Ошибка обновления счётчика:', error));
     }
-    updateCartCount();
-    setInterval(updateCartCount, 5000); // обновление раз в 5 секунд
+    document.addEventListener('DOMContentLoaded', updateCartCount);
+    setInterval(updateCartCount, 5000);
 
-    // Бургер-меню
-    document.querySelector('.burger-btn').addEventListener('click', function() {
-        document.querySelector('.nav-links').classList.toggle('active');
+    document.addEventListener('DOMContentLoaded', function() {
+        var burger = document.querySelector('.burger-btn');
+        var nav = document.querySelector('.nav-links');
+        if (burger && nav) {
+            burger.addEventListener('click', function() {
+                nav.classList.toggle('active');
+            });
+        }
     });
 </script>
 </body>

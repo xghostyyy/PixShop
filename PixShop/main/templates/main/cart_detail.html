@@ -4,79 +4,123 @@
 {% block title %}Корзина — PixShop{% endblock %}
 
 {% block breadcrumbs %}
-<a href="{% url 'item_list' %}">Главная</a> <span>→</span> <span>Корзина</span>
+<a href="{% url 'item_list' %}">Главная</a> → Корзина
 {% endblock %}
 
 {% block content %}
-<h2 style="font-size: 1rem;">КОРЗИНА</h2>
+<h2>КОРЗИНА</h2>
 
-{% if cart_items %}
-    <table class="cart-table">
-        <thead>
-            <tr><th>Изображение</th><th>Товар</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>
-        </thead>
-        <tbody>
-        {% for entry in cart_items %}
-            <tr id="cart-item-{{ entry.item.id }}">
-                <td>
-                    {% if entry.item.image %}
-                        <img src="{{ entry.item.image.url }}" class="cart-image" alt="{{ entry.item.name }}">
-                    {% else %}
-                        <div class="no-img" style="width:50px; height:50px;">—</div>
-                    {% endif %}
-                </td>
-                <td><a href="{% url 'item_detail' entry.item.id %}" style="color:white;">{{ entry.item.name|upper }}</a></td>
-                <td>
-                    <input type="number" value="{{ entry.quantity }}" min="0" class="quantity-input"
-                           data-item-id="{{ entry.item.id }}" data-url="{% url 'update_cart_ajax' %}">
-                </td>
-                <td>{{ entry.item.price }} ₽</td>
-                <td class="subtotal-{{ entry.item.id }}">{{ entry.subtotal }} ₽</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    <p style="text-align: right; font-size: 1rem;" id="cart-total">ИТОГО: {{ total }} ₽</p>
-    <div style="display: flex; justify-content: space-between; margin-top: 30px;">
-        <a href="{% url 'catalog' %}" class="btn-add">⬅ ПРОДОЛЖИТЬ</a>
-        {% if user.is_authenticated %}
-            <a href="{% url 'checkout' %}" class="btn-add">ОФОРМИТЬ ЗАКАЗ</a>
-        {% else %}
-            <a href="{% url 'login' %}" class="btn-add">ВОЙДИТЕ ДЛЯ ОФОРМЛЕНИЯ</a>
-        {% endif %}
-    </div>
-{% else %}
-    <div class="empty-state">
-        <p>🛒 КОРЗИНА ПУСТА</p>
-        <a href="{% url 'catalog' %}" class="btn-add">ПЕРЕЙТИ К ТОВАРАМ</a>
-    </div>
-{% endif %}
+<div id="cart-content">
+    {% if cart_items %}
+        <table class="cart-table">
+            <thead>
+                <tr><th>Товар</th><th>Кол-во</th><th>Цена</th><th>Сумма</th><th>Удалить</th></tr>
+            </thead>
+            <tbody>
+            {% for entry in cart_items %}
+                <tr id="cart-item-{{ entry.item.id }}">
+                    <td data-label="Товар">
+                        <a href="{% url 'item_detail' entry.item.id %}" class="cart-item-name">{{ entry.item.name|upper }}</a>
+                    </td>
+                    <td data-label="Количество">
+                        <input type="number" value="{{ entry.quantity }}" min="0" class="quantity-input"
+                               data-item-id="{{ entry.item.id }}" data-url="{% url 'update_cart_ajax' %}">
+                    </td>
+                    <td data-label="Цена" class="cart-price">{{ entry.item.price }} ₽</td>
+                    <td data-label="Сумма" class="cart-subtotal subtotal-{{ entry.item.id }}">{{ entry.subtotal }} ₽</td>
+                    <td data-label="Удалить">
+                        <button class="delete-btn" data-item-id="{{ entry.item.id }}">✖</button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <p class="cart-total-line" id="cart-total">ИТОГО: {{ total }} ₽</p>
+        <div class="cart-actions">
+            <a href="{% url 'catalog' %}" class="btn-add">ПРОДОЛЖИТЬ</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'checkout' %}" class="btn-add">ОФОРМИТЬ ЗАКАЗ</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-add">ВОЙДИТЕ ДЛЯ ОФОРМЛЕНИЯ</a>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>КОРЗИНА ПУСТА</p>
+            <a href="{% url 'catalog' %}" class="btn-add">ПЕРЕЙТИ К ТОВАРАМ</a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    /* Стили для корзины — можно перенести в общий CSS */
+    .cart-table { width:100%; border-collapse:collapse; font-size:0.7rem; margin:20px 0; }
+    .cart-table th, .cart-table td { border:1px solid white; padding:12px; text-align:left; vertical-align:middle; }
+    .cart-table th { background:#1e3a8a; }
+    .cart-item-name { color:white; text-decoration:none; border-bottom:1px dotted white; }
+    .quantity-input { width:70px; background:black; border:1px solid white; color:white; font-family:monospace; text-align:center; padding:6px; }
+    .delete-btn { background:none; border:1px solid white; color:white; font-family:monospace; font-size:1rem; cursor:pointer; padding:4px 8px; }
+    .delete-btn:hover { background:#b91c1c; }
+    .cart-total-line { text-align:right; font-size:1rem; margin-top:20px; padding-top:15px; border-top:1px solid white; }
+    .cart-actions { display:flex; justify-content:space-between; margin-top:30px; gap:20px; }
+    .empty-state { text-align:center; padding:40px 20px; border:1px dashed white; margin-top:20px; }
+    @media (max-width:700px) {
+        .cart-table, .cart-table thead, .cart-table tbody, .cart-table tr, .cart-table th, .cart-table td { display:block; }
+        .cart-table thead { display:none; }
+        .cart-table tr { margin-bottom:20px; border:1px solid white; }
+        .cart-table td { border:none; border-bottom:1px solid #333; text-align:right; padding-left:40%; position:relative; }
+        .cart-table td:before { content:attr(data-label); position:absolute; left:10px; width:35%; text-align:left; font-weight:bold; color:#1e3a8a; }
+        .cart-actions { flex-direction:column; }
+    }
+</style>
 
 <script>
+    function updateCartItem(itemId, quantity) {
+        fetch("{% url 'update_cart_ajax' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ item_id: itemId, quantity: quantity })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                if (quantity == 0) {
+                    const row = document.getElementById(`cart-item-${itemId}`);
+                    if (row) row.remove();
+                } else {
+                    const subtotalSpan = document.querySelector(`.subtotal-${itemId}`);
+                    if (subtotalSpan) subtotalSpan.innerText = data.new_subtotal + ' ₽';
+                }
+                const totalSpan = document.getElementById('cart-total');
+                if (totalSpan) totalSpan.innerText = 'ИТОГО: ' + data.new_total + ' ₽';
+                const remaining = document.querySelectorAll('.cart-table tbody tr').length;
+                if (remaining === 0 || data.new_total == 0) {
+                    document.getElementById('cart-content').innerHTML = `
+                        <div class="empty-state">
+                            <p>КОРЗИНА ПУСТА</p>
+                            <a href="{% url 'catalog' %}" class="btn-add">ПЕРЕЙТИ К ТОВАРАМ</a>
+                        </div>
+                    `;
+                }
+                if (typeof updateCartCount === 'function') updateCartCount();
+            } else {
+                alert('Ошибка: ' + (data.error || 'неизвестная'));
+            }
+        });
+    }
+
     document.querySelectorAll('.quantity-input').forEach(input => {
         input.addEventListener('change', function() {
-            const itemId = this.dataset.itemId;
-            const quantity = this.value;
-            const url = this.dataset.url;
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ item_id: itemId, quantity: quantity })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // обновляем subtotal и общую сумму
-                    document.querySelector(`.subtotal-${itemId}`).innerText = data.new_subtotal + ' ₽';
-                    document.getElementById('cart-total').innerText = 'ИТОГО: ' + data.new_total + ' ₽';
-                    updateCartCount(); // из base.html
-                } else {
-                    alert('Ошибка обновления');
-                }
-            });
+            updateCartItem(this.dataset.itemId, this.value);
+        });
+    });
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            updateCartItem(this.dataset.itemId, 0);
         });
     });
 </script>

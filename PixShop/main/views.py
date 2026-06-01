@@ -52,9 +52,7 @@ def checkout(request):
     items = Item.objects.filter(id__in=cart.keys())
     if not items.exists():
         return redirect('item_list')
-    status_new, _ = Status.objects.get_or_create(
-        code='new', defaults={'name': 'Новый'}
-    )
+    status_new, _ = Status.objects.get_or_create(name='Новый')
 
     order = Order.objects.create(user=request.user, status=status_new)
     for item in items:
@@ -104,16 +102,26 @@ def profile(request):
 def update_cart_ajax(request):
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data = json.loads(request.body)
-        item_id = int(data.get('item_id'))
+        item_id = str(data.get('item_id'))
         quantity = int(data.get('quantity'))
+
+        # Берём текущую корзину (не копию!)
         cart = request.session.get('cart', {})
+
         if quantity > 0:
             cart[item_id] = quantity
         else:
-            cart.pop(item_id, None)
-        request.session['cart'] = cart
+            # Удаляем товар
+            if item_id in cart:
+                del cart[item_id]
 
-        items = Item.objects.filter(id__in = cart.keys())
+        # Принудительно сохраняем сессию
+        request.session['cart'] = cart
+        request.session.modified = True   # КЛЮЧЕВОЙ МОМЕНТ
+
+        # Пересчёт
+        from .models import Item
+        items = Item.objects.filter(id__in=cart.keys())
         total = 0
         new_subtotal = 0
         for item in items:
@@ -122,12 +130,12 @@ def update_cart_ajax(request):
             total += subtotal
             if str(item.id) == item_id:
                 new_subtotal = subtotal
-        return JsonResponse({'success': True, 'new_subtotal': new_subtotal,
-                             'new_total': total})
+
+        return JsonResponse({'success': True, 'new_subtotal': new_subtotal, 'new_total': total})
     return JsonResponse({'success': False})
 
 def cart_count_api(request):
-    cart = request.session.get(('cart', {}))
+    cart = request.session.get('cart', {})
     total_count = sum(cart.values())
     return JsonResponse({'count': total_count})
 
