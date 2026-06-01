@@ -13,6 +13,6 @@ class UserRegisterForm(UserCreationForm):
 
         for field_name, field in self.fields.items():
             field.widget.attrs.update(
-                {'class': 'form-controol', 
+                {'class': 'form-control', 
                  'style': 'font-family: monospace;'}
             )
