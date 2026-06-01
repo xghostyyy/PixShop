@@ -16,6 +16,7 @@
         </div>
         <div class="nav-links">
             <a href="{% url 'cart_detail' %}">📦 КОРЗИНА</a>
+            <a href="{% url 'profile' %}">👤 ПРОФИЛЬ</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'logout' %}">🚪 ВЫЙТИ ({{ user.email }})</a>
             {% else %}

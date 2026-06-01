@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Item, Order, Order_item, Status
 from .forms import UserRegisterForm
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 
 def item_list(request):
     items = Item.objects.all()
@@ -68,7 +69,7 @@ def checkout(request):
     
 def order_conf(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    return render(request, 'main/order_conf.html', {'order', order})
+    return render(request, 'main/order_conf.html', {'order': order})
 
 def register(request):
     if request.method == 'POST':
@@ -90,5 +91,10 @@ def update_cart_item(request, item_id):
         else:
             if str(item_id) in cart:
                 del cart[str(item_id)]
-        request.sessiom['cart'] = cart
+        request.session['cart'] = cart
     return redirect('cart_detail')
+
+@login_required
+def profile(request):
+    orders = request.user.orders.all().order_by('-created_at')
+    return render(request, 'main/profile.html', {'orders': orders})
