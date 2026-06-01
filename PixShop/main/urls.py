@@ -12,4 +12,5 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('update-cart-ajax/', views.update_cart_ajax, name='update_cart_ajax'),
     path('api/cart-count/', views.cart_count_api, name='cart_count_api'),
+    path('catalog/', views.catalog, name='catalog'),
 ]

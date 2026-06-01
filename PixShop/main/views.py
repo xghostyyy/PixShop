@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Item, Order, Order_item, Status
+from .models import Item, Order, Order_item, Status, Category
 from .forms import UserRegisterForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -130,3 +130,15 @@ def cart_count_api(request):
     cart = request.session.get(('cart', {}))
     total_count = sum(cart.values())
     return JsonResponse({'count': total_count})
+
+def catalog(request):
+    categories = Category.objects.all()
+    selected_categories = request.GET.getlist('categories')
+    items = Item.objects.all()
+    if selected_categories:
+        items = items.filter(categories__id__in=selected_categories).distinct()
+    return render(request, 'main/catalog.html', {
+        'items': items,
+        'categories': categories,
+        'selected_categories': [int(c) for c in selected_categories]
+    })

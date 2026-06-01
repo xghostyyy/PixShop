@@ -1,0 +1,21 @@
+<div class="item-card">
+    <div class="item-image">
+        {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.name }}">
+        {% else %}
+            <div class="no-img">[нет иконки]</div>
+        {% endif %}
+    </div>
+    <div class="item-title">
+        <a href="{% url 'item_detail' item.id %}">{{ item.name|upper }}</a>
+    </div>
+    <div class="item-price">{{ item.price }} ₽</div>
+    <div class="item-categories">
+        {% for cat in item.categories.all %}
+            <span>#{{ cat.name|lower }}</span>
+        {% empty %}
+            <span style="background: #333;">без категории</span>
+        {% endfor %}
+    </div>
+    <a href="{% url 'add_to_cart' item.id %}" class="btn-add">В КОРЗИНУ</a>
+</div>
