@@ -125,3 +125,8 @@ def update_cart_ajax(request):
         return JsonResponse({'success': True, 'new_subtotal': new_subtotal,
                              'new_total': total})
     return JsonResponse({'success': False})
+
+def cart_count_api(request):
+    cart = request.session.get(('cart', {}))
+    total_count = sum(cart.values())
+    return JsonResponse({'count': total_count})
