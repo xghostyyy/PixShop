@@ -4,6 +4,8 @@ from .models import Item, Order, Order_item, Status
 from .forms import UserRegisterForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+import json
 
 def item_list(request):
     items = Item.objects.all()
@@ -98,3 +100,28 @@ def update_cart_item(request, item_id):
 def profile(request):
     orders = request.user.orders.all().order_by('-created_at')
     return render(request, 'main/profile.html', {'orders': orders})
+
+def update_cart_ajax(request):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+        item_id = int(data.get('item_id'))
+        quantity = int(data.get('quantity'))
+        cart = request.session.get('cart', {})
+        if quantity > 0:
+            cart[item_id] = quantity
+        else:
+            cart.pop(item_id, None)
+        request.session['cart'] = cart
+
+        items = Item.objects.filter(id__in = cart.keys())
+        total = 0
+        new_subtotal = 0
+        for item in items:
+            qty = cart[str(item.id)]
+            subtotal = item.price * qty
+            total += subtotal
+            if str(item.id) == item_id:
+                new_subtotal = subtotal
+        return JsonResponse({'success': True, 'new_subtotal': new_subtotal,
+                             'new_total': total})
+    return JsonResponse({'success': False})

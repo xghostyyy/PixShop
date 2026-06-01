@@ -1,96 +1,83 @@
+{% extends 'main/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Корзина — PixShop</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'main/css/styles.css' %}">
-    <style>
-        .cart-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.7rem;
-        }
-        .cart-table th, .cart-table td {
-            border: 2px solid white;
-            padding: 10px;
-            text-align: left;
-        }
-        .cart-table th {
-            background: #1e3a8a;
-        }
-        .quantity-input {
-            width: 60px;
-            background: black;
-            border: 2px solid white;
-            color: white;
-            font-family: monospace;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="header">
-        <div class="logo">
-            <h1>◢ PIXSHOP ◣</h1>
-            <p>retro // pixel // style</p>
-        </div>
-        <div class="nav-links">
-            <a href="{% url 'item_list' %}">🏠 ГЛАВНАЯ</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}">🚪 ВЫЙТИ ({{ user.email }})</a>
-            {% else %}
-                <a href="{% url 'login' %}">🔑 ВХОД</a>
-                <a href="{% url 'register' %}">📝 РЕГИСТРАЦИЯ</a>
-            {% endif %}
-        </div>
+
+{% block title %}Корзина — PixShop{% endblock %}
+
+{% block breadcrumbs %}
+<a href="{% url 'item_list' %}">Главная</a> <span>→</span> <span>Корзина</span>
+{% endblock %}
+
+{% block content %}
+<h2 style="font-size: 1rem;">КОРЗИНА</h2>
+
+{% if cart_items %}
+    <table class="cart-table">
+        <thead>
+            <tr><th>Изображение</th><th>Товар</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>
+        </thead>
+        <tbody>
+        {% for entry in cart_items %}
+            <tr id="cart-item-{{ entry.item.id }}">
+                <td>
+                    {% if entry.item.image %}
+                        <img src="{{ entry.item.image.url }}" class="cart-image" alt="{{ entry.item.name }}">
+                    {% else %}
+                        <div class="no-img" style="width:50px; height:50px;">—</div>
+                    {% endif %}
+                </td>
+                <td><a href="{% url 'item_detail' entry.item.id %}" style="color:white;">{{ entry.item.name|upper }}</a></td>
+                <td>
+                    <input type="number" value="{{ entry.quantity }}" min="0" class="quantity-input"
+                           data-item-id="{{ entry.item.id }}" data-url="{% url 'update_cart_ajax' %}">
+                </td>
+                <td>{{ entry.item.price }} ₽</td>
+                <td class="subtotal-{{ entry.item.id }}">{{ entry.subtotal }} ₽</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p style="text-align: right; font-size: 1rem;" id="cart-total">ИТОГО: {{ total }} ₽</p>
+    <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+        <a href="{% url 'catalog' %}" class="btn-add">⬅ ПРОДОЛЖИТЬ</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'checkout' %}" class="btn-add">ОФОРМИТЬ ЗАКАЗ</a>
+        {% else %}
+            <a href="{% url 'login' %}" class="btn-add">ВОЙДИТЕ ДЛЯ ОФОРМЛЕНИЯ</a>
+        {% endif %}
     </div>
-
-    <h2 style="font-size: 1rem;">🛒 КОРЗИНА</h2>
-
-    {% if cart_items %}
-        <table class="cart-table">
-            <thead>
-                <tr><th>Товар</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>
-            </thead>
-            <tbody>
-            {% for entry in cart_items %}
-                <tr>
-                    <td><a href="{% url 'item_detail' entry.item.id %}" style="color: white;">{{ entry.item.name|upper }}</a></td>
-                    <td>
-                        <form method="post" action="{% url 'update_cart_item' entry.item.id %}" style="display: flex; gap: 5px;">
-                            {% csrf_token %}
-                            <input type="number" name="quantity" value="{{ entry.quantity }}" min="0" class="quantity-input">
-                            <button type="submit" class="btn-add" style="padding: 4px 8px;">🔄</button>
-                        </form>
-                    </td>
-                    <td>{{ entry.item.price }} ₽</td>
-                    <td>{{ entry.subtotal }} ₽</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <p style="text-align: right; font-size: 1rem; margin-top: 20px;">ИТОГО: {{ total }} ₽</p>
-        <div style="display: flex; justify-content: space-between; margin-top: 30px;">
-            <a href="{% url 'item_list' %}" class="btn-add">⬅ ПРОДОЛЖИТЬ</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'checkout' %}" class="btn-add">✅ ОФОРМИТЬ ЗАКАЗ</a>
-            {% else %}
-                <a href="{% url 'login' %}" class="btn-add">🔑 ВОЙДИТЕ ДЛЯ ОФОРМЛЕНИЯ</a>
-            {% endif %}
-        </div>
-    {% else %}
-        <div class="empty-state">
-            <p>🛒 КОРЗИНА ПУСТА</p>
-            <a href="{% url 'item_list' %}" class="btn-add">ПЕРЕЙТИ К ТОВАРАМ</a>
-        </div>
-    {% endif %}
-
-    <div class="footer">
-        <p>PIXSHOP © 2026</p>
+{% else %}
+    <div class="empty-state">
+        <p>🛒 КОРЗИНА ПУСТА</p>
+        <a href="{% url 'catalog' %}" class="btn-add">ПЕРЕЙТИ К ТОВАРАМ</a>
     </div>
-</div>
-</body>
-</html>
+{% endif %}
+
+<script>
+    document.querySelectorAll('.quantity-input').forEach(input => {
+        input.addEventListener('change', function() {
+            const itemId = this.dataset.itemId;
+            const quantity = this.value;
+            const url = this.dataset.url;
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ item_id: itemId, quantity: quantity })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // обновляем subtotal и общую сумму
+                    document.querySelector(`.subtotal-${itemId}`).innerText = data.new_subtotal + ' ₽';
+                    document.getElementById('cart-total').innerText = 'ИТОГО: ' + data.new_total + ' ₽';
+                    updateCartCount(); // из base.html
+                } else {
+                    alert('Ошибка обновления');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

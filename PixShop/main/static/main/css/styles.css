@@ -15,7 +15,6 @@ body {
     animation: flicker 0.15s infinite;
 }
 
-/* ретро-контейнер */
 .container {
     max-width: 1300px;
     margin: 0 auto;
@@ -34,6 +33,7 @@ body {
     border-bottom: 4px solid #ffffff;
     padding-bottom: 16px;
     margin-bottom: 32px;
+    position: relative;
 }
 
 .logo h1 {
@@ -53,22 +53,73 @@ body {
     color: #cccccc;
 }
 
+/* Бургер-кнопка */
+.burger-btn {
+    display: none;
+    background: none;
+    border: 2px solid white;
+    color: white;
+    font-size: 1.8rem;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-family: monospace;
+}
+.burger-btn:hover {
+    background: #1e3a8a;
+}
+
+.nav-links {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
 .nav-links a {
     color: #ffffff;
     text-decoration: none;
     font-size: 0.7rem;
-    margin-left: 20px;
     padding: 6px 10px;
     border: 2px solid #ffffff;
     transition: all 0.1s ease;
+    position: relative;
 }
-
 .nav-links a:hover {
     background: #1e3a8a;
     border-color: #1e3a8a;
-    color: #ffffff;
     box-shadow: 2px 2px 0 #ffffff;
     transform: translate(-2px, -2px);
+}
+
+/* Счётчик корзины */
+.cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #b91c1c;
+    color: white;
+    font-size: 0.5rem;
+    padding: 2px 5px;
+    border-radius: 0;
+    border: 1px solid white;
+    font-family: monospace;
+}
+.cart-link {
+    position: relative;
+}
+
+/* Хлебные крошки */
+.breadcrumbs {
+    font-size: 0.55rem;
+    margin-bottom: 20px;
+    padding: 8px;
+    background: #111;
+    border-left: 4px solid #1e3a8a;
+}
+.breadcrumbs a {
+    color: #1e3a8a;
+    text-decoration: none;
+}
+.breadcrumbs span {
+    color: #aaaaaa;
 }
 
 /* ---------- СЕТКА ТОВАРОВ ---------- */
@@ -88,12 +139,10 @@ body {
     display: flex;
     flex-direction: column;
 }
-
 .item-card:hover {
     transform: translate(-3px, -3px);
     box-shadow: 6px 6px 0 #1e3a8a;
 }
-
 .item-image {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -105,34 +154,28 @@ body {
     margin-bottom: 14px;
     overflow: hidden;
 }
-
 .item-image img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
     image-rendering: pixelated;
 }
-
 .no-img {
     font-size: 2rem;
     opacity: 0.5;
     font-family: monospace;
 }
-
 .item-title {
     font-size: 0.8rem;
     margin-bottom: 8px;
     text-transform: uppercase;
-    color: #ffffff;
     word-break: break-word;
 }
-
 .item-title a {
     color: white;
     text-decoration: none;
     border-bottom: 1px dotted white;
 }
-
 .item-price {
     font-size: 1rem;
     color: #1e3a8a;
@@ -142,14 +185,11 @@ body {
     margin: 8px 0;
     letter-spacing: 1px;
 }
-
 .item-categories {
     font-size: 0.55rem;
     margin: 8px 0;
     color: #aaaaaa;
-    word-break: break-word;
 }
-
 .item-categories span {
     background: #1e3a8a;
     padding: 2px 6px;
@@ -158,7 +198,6 @@ body {
     margin-bottom: 5px;
     color: white;
 }
-
 .btn-add {
     background: none;
     border: 2px solid #ffffff;
@@ -173,22 +212,18 @@ body {
     display: inline-block;
     transition: 0.05s linear;
 }
-
 .btn-add:hover {
     background: #b91c1c;
     border-color: #b91c1c;
-    color: white;
     box-shadow: 2px 2px 0 white;
     transform: translate(-2px, -2px);
 }
-
 .empty-state {
     text-align: center;
     padding: 50px 20px;
     border: 2px dashed #ffffff;
     font-size: 0.8rem;
 }
-
 .footer {
     margin-top: 50px;
     border-top: 4px solid #ffffff;
@@ -198,26 +233,101 @@ body {
     color: #777777;
 }
 
-@keyframes flicker {
-    0% { opacity: 1; }
-    50% { opacity: 0.98; }
-    100% { opacity: 1; }
+/* Фильтр категорий */
+.filter-form {
+    margin-bottom: 30px;
+    padding: 15px;
+    background: #111;
+    border: 2px solid white;
+}
+.filter-form select {
+    background: black;
+    color: white;
+    border: 2px solid white;
+    padding: 6px;
+    font-family: monospace;
+}
+.filter-form button {
+    margin-left: 10px;
 }
 
-@media (max-width: 700px) {
-    .container {
-        padding: 16px;
+/* ---------- КОРЗИНА ---------- */
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.7rem;
+}
+.cart-table th, .cart-table td {
+    border: 2px solid white;
+    padding: 10px;
+    text-align: left;
+    vertical-align: middle;
+}
+.cart-table th {
+    background: #1e3a8a;
+}
+.cart-image {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    background: #222;
+}
+.quantity-input {
+    width: 70px;
+    background: black;
+    border: 2px solid white;
+    color: white;
+    font-family: monospace;
+    text-align: center;
+    padding: 4px;
+}
+
+/* Адаптивность */
+@media (max-width: 800px) {
+    .items-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     }
-    .header {
+    .burger-btn {
+        display: block;
+    }
+    .nav-links {
+        display: none;
         flex-direction: column;
-        gap: 15px;
+        width: 100%;
+        margin-top: 15px;
+        border-top: 2px solid white;
+        padding-top: 15px;
+    }
+    .nav-links.active {
+        display: flex;
     }
     .nav-links a {
-        margin-left: 0;
-        margin-right: 15px;
-        display: inline-block;
+        margin: 5px 0;
+    }
+    .cart-table, .cart-table thead, .cart-table tbody, .cart-table th, .cart-table td, .cart-table tr {
+        display: block;
+    }
+    .cart-table tr {
+        margin-bottom: 20px;
+        border: 2px solid white;
+    }
+    .cart-table td {
+        border: none;
+        border-bottom: 1px solid #333;
+    }
+}
+
+@media (max-width: 500px) {
+    body {
+        padding: 10px;
     }
     .logo h1 {
         font-size: 1.2rem;
     }
+}
+
+@keyframes flicker {
+    0% { opacity: 1; }
+    50% { opacity: 0.98; }
+    100% { opacity: 1; }
 }
