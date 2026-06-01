@@ -32,6 +32,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class ItemAdmin(admin.ModelAdmin):
     list_display = ('name', 'price', 'display_categories',)
     list_filter = ('categories',)
+    prepopulated_fields = {'slug': ('name',)}
 
     def display_categories(self, obj):
         return ",".join([c.name for c in obj.categories.all()])
