@@ -4,30 +4,51 @@
 {% block title %}Каталог — PixShop{% endblock %}
 
 {% block breadcrumbs %}
-<a href="{% url 'item_list' %}">Главная</a> <span>→</span> <span>Каталог</span>
+<a href="{% url 'item_list' %}">Главная</a> → Каталог
 {% endblock %}
 
 {% block content %}
-<h2 style="font-size: 1rem;">КАТАЛОГ ТОВАРОВ</h2>
+<h2>КАТАЛОГ ТОВАРОВ</h2>
 
-<div class="filter-form">
-    <form method="get">
-        <label>Категории:</label>
-        <select name="categories" multiple size="5">
-            {% for cat in categories %}
-                <option value="{{ cat.id }}" {% if cat.id in selected_categories %}selected{% endif %}>{{ cat.name }}</option>
+<div class="catalog-with-sidebar">
+    <div class="sidebar">
+        <h3>ФИЛЬТРЫ И СОРТИРОВКА</h3>
+        <form method="get" id="sort-form">
+            <div class="sort-group">
+                <label>Категория</label>
+                <select name="category">
+                    <option value="">Все категории</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>
+                            {{ cat.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="sort-group">
+                <label>Сортировать по</label>
+                <select name="sort">
+                    <option value="name_asc" {% if sort == 'name_asc' %}selected{% endif %}>Название (А–Я)</option>
+                    <option value="name_desc" {% if sort == 'name_desc' %}selected{% endif %}>Название (Я–А)</option>
+                    <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Цена (сначала дешёвые)</option>
+                    <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Цена (сначала дорогие)</option>
+                    <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Сначала новинки</option>
+                </select>
+            </div>
+            <div class="sort-group">
+                <button type="submit" class="btn-add">ПРИМЕНИТЬ</button>
+                <a href="{% url 'catalog' %}" class="btn-add" style="display: block; text-align: center;">СБРОСИТЬ</a>
+            </div>
+        </form>
+    </div>
+    <div style="overflow: hidden;">
+        <div class="items-grid">
+            {% for item in items %}
+                {% include 'main/_item_card.html' with item=item %}
+            {% empty %}
+                <div class="empty-state">Товаров не найдено</div>
             {% endfor %}
-        </select>
-        <button type="submit" class="btn-add">ПРИМЕНИТЬ</button>
-        <a href="{% url 'catalog' %}" class="btn-add">СБРОСИТЬ</a>
-    </form>
-</div>
-
-<div class="items-grid">
-    {% for item in items %}
-        {% include 'main/_item_card.html' with item=item %}
-    {% empty %}
-        <div class="empty-state">Товаров не найдено</div>
-    {% endfor %}
+        </div>
+    </div>
 </div>
 {% endblock %}

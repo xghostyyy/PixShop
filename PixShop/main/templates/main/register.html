@@ -1,58 +1,20 @@
+{% extends 'main/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Регистрация — PixShop</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'main/css/pixshop.css' %}">
-    <style>
-        /* небольшие правки для форм */
-        input, select, textarea {
-            font-family: monospace;
-            background: #111;
-            border: 2px solid #fff;
-            color: #fff;
-            padding: 6px;
-            margin: 5px 0;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .btn-add {
-            background: none;
-            border: 2px solid #ffffff;
-            color: #ffffff;
-            font-family: 'Press Start 2P', monospace;
-            font-size: 0.6rem;
-            padding: 8px 12px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn-add:hover {
-            background: #1e3a8a;
-            border-color: #1e3a8a;
-            box-shadow: 2px 2px 0 white;
-            transform: translate(-2px, -2px);
-        }
-        .errorlist {
-            color: #b91c1c;
-            font-size: 0.6rem;
-            list-style: none;
-            margin: 5px 0;
-        }
-    </style>
-</head>
-<body>
-<div class="container" style="max-width: 600px;">
-    <h1 style="font-size: 1rem;">РЕГИСТРАЦИЯ</h1>
+
+{% block title %}Регистрация — PixShop{% endblock %}
+
+{% block breadcrumbs %}
+<a href="{% url 'item_list' %}">Главная</a> → Регистрация
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <h1>РЕГИСТРАЦИЯ</h1>
     <form method="post" style="margin-top: 30px;">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn-add" style="margin-top: 20px;">ЗАРЕГИСТРИРОВАТЬСЯ</button>
     </form>
     <p style="margin-top: 20px; font-size: 0.6rem;">Уже есть аккаунт? <a href="{% url 'login' %}" style="color: white;">Войти</a></p>
-    <p><a href="{% url 'item_list' %}" style="color: white; font-size: 0.6rem;">← На главную</a></p>
 </div>
-</body>
-</html>
+{% endblock %}

@@ -53,19 +53,75 @@ body {
     color: #cccccc;
 }
 
-/* Бургер-кнопка */
-.burger-btn {
-    display: none;
-    background: none;
-    border: 2px solid white;
-    color: white;
-    font-size: 1.8rem;
-    padding: 5px 12px;
-    cursor: pointer;
-    font-family: monospace;
+/* Стили для кнопок + и – в корзине */
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
-.burger-btn:hover {
+.qty-btn {
+    background: black;
+    border: 1px solid white;
+    color: white;
+    font-family: monospace;
+    font-size: 1rem;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+.qty-btn:hover {
     background: #1e3a8a;
+}
+.qty-value {
+    min-width: 40px;
+    text-align: center;
+    font-size: 0.8rem;
+}
+.quantity-cell {
+    text-align: center;
+}
+
+/* Панель сортировки (боковая) */
+.sidebar {
+    width: 260px;
+    float: left;
+    margin-right: 30px;
+    background: #111;
+    border: 1px solid white;
+    padding: 15px;
+}
+.sidebar h3 {
+    font-size: 0.7rem;
+    margin-bottom: 15px;
+    border-bottom: 1px solid white;
+    padding-bottom: 5px;
+}
+.sort-group {
+    margin-bottom: 20px;
+}
+.sort-group label {
+    display: block;
+    font-size: 0.6rem;
+    margin-bottom: 8px;
+}
+.sort-group select, .sort-group button {
+    width: 100%;
+    background: black;
+    border: 1px solid white;
+    color: white;
+    font-family: monospace;
+    padding: 5px;
+    margin-bottom: 8px;
+}
+.sort-group button {
+    background: #1e3a8a;
+    cursor: pointer;
+}
+.sort-group button:hover {
+    background: #b91c1c;
+}
+.catalog-with-sidebar {
+    overflow: hidden;
 }
 
 .nav-links {
@@ -251,206 +307,25 @@ body {
     margin-left: 10px;
 }
 
-/* ===== КОРЗИНА: ЦЕНТРИРОВАНИЕ + КОМПАКТНОЕ ПОЛЕ ===== */
-
-.cart-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 25px 0;
-    font-family: 'Press Start 2P', monospace;
-}
-
-/* Заголовки и ячейки — центрируем всё, кроме первого столбца с названием товара */
-.cart-table th,
-.cart-table td {
-    border: 2px solid #ffffff;
-    padding: 18px 12px;
-    vertical-align: middle;
-    text-align: center;          /* ← центрируем все ячейки */
-}
-
-/* Заголовки оставляем центрированными */
-.cart-table th {
-    background: #1e3a8a;
-    font-size: 0.7rem;
-    letter-spacing: 1px;
-}
-
-/* Первый столбец (название товара) выравниваем влево, чтобы не «слипалось» с центром */
-.cart-table td:first-child,
-.cart-table th:first-child {
-    text-align: left;
-}
-
-/* Ссылка на товар — подчёркнутая, без дополнительных отступов */
-.cart-item-name {
-    color: white;
-    text-decoration: none;
-    border-bottom: 1px dotted white;
-    font-size: 0.7rem;
-}
-.cart-item-name:hover {
-    color: #1e3a8a;
-    border-bottom-color: #1e3a8a;
-}
-
-/* ПОЛЕ КОЛИЧЕСТВА — тёмное, компактное, без стрелок */
-.quantity-input {
-    width: 65px;
-    background: #000000;         /* чёрный фон */
-    border: 2px solid #ffffff;   /* белая рамка */
-    color: #ffffff;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 0.65rem;
-    text-align: center;
-    padding: 6px 2px;
-    margin: 0 auto;
-    display: block;
-    appearance: textfield;       /* убираем стандартные стрелки в Firefox */
-}
-.quantity-input:focus {
-    outline: none;
-    border-color: #1e3a8a;
-}
-/* Убираем стрелки в Chrome, Safari, Edge */
-.quantity-input::-webkit-inner-spin-button,
-.quantity-input::-webkit-outer-spin-button {
-    display: none;
-}
-
-/* Цены и суммы — жирный шрифт, моноширинный */
-.cart-price,
-.cart-subtotal {
-    font-weight: bold;
-    font-size: 0.7rem;
-    white-space: nowrap;
-}
-
-/* Итоговая строка */
-.cart-total-line {
-    text-align: right;
-    font-size: 0.9rem;
-    margin-top: 25px;
-    padding-top: 20px;
-    border-top: 3px solid #ffffff;
-}
-.cart-total-line strong {
-    margin-right: 10px;
-}
-#cart-total {
-    background: #1e3a8a;
-    padding: 4px 12px;
-    display: inline-block;
-}
-
-/* Кнопки под корзиной */
-.cart-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 40px;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-.cart-actions .btn-add {
-    flex: 1;
-    text-align: center;
-    font-size: 0.65rem;
-}
-
-/* Адаптивность: на узких экранах превращаем таблицу в карточки с подписями */
-@media (max-width: 750px) {
-    .cart-table,
-    .cart-table thead,
-    .cart-table tbody,
-    .cart-table tr,
-    .cart-table th,
-    .cart-table td {
-        display: block;
+.cart-table { width:100%; border-collapse:collapse; font-size:0.7rem; margin:20px 0; }
+    .cart-table th, .cart-table td { border:1px solid white; padding:12px; text-align:left; vertical-align:middle; }
+    .cart-table th { background:#1e3a8a; }
+    .cart-item-name { color:white; text-decoration:none; border-bottom:1px dotted white; }
+    .quantity-input { width:70px; background:black; border:1px solid white; color:white; font-family:monospace; text-align:center; padding:6px; }
+    .delete-btn { background:none; border:1px solid white; color:white; font-family:monospace; font-size:1rem; cursor:pointer; padding:4px 8px; }
+    .delete-btn:hover { background:#b91c1c; }
+    .cart-total-line { text-align:right; font-size:1rem; margin-top:20px; padding-top:15px; border-top:1px solid white; }
+    .cart-actions { display:flex; justify-content:space-between; margin-top:30px; gap:20px; }
+    .empty-state { text-align:center; padding:40px 20px; border:1px dashed white; margin-top:20px; }
+    
+    @media (max-width:700px) {
+        .cart-table, .cart-table thead, .cart-table tbody, .cart-table tr, .cart-table th, .cart-table td { display:block; }
+        .cart-table thead { display:none; }
+        .cart-table tr { margin-bottom:20px; border:1px solid white; }
+        .cart-table td { border:none; border-bottom:1px solid #333; text-align:right; padding-left:40%; position:relative; }
+        .cart-table td:before { content:attr(data-label); position:absolute; left:10px; width:35%; text-align:left; font-weight:bold; color:#1e3a8a; }
+        .cart-actions { flex-direction:column; }
     }
-    .cart-table thead {
-        display: none;
-    }
-    .cart-table tr {
-        margin-bottom: 25px;
-        border: 2px solid white;
-        background: #0a0a0a;
-    }
-    .cart-table td {
-        border: none;
-        border-bottom: 1px solid #333;
-        text-align: right;
-        padding: 14px 15px 14px 40%;
-        position: relative;
-    }
-    .cart-table td:before {
-        content: attr(data-label);
-        position: absolute;
-        left: 15px;
-        width: 35%;
-        text-align: left;
-        font-weight: bold;
-        color: #1e3a8a;
-        font-size: 0.6rem;
-        white-space: normal;
-    }
-    /* Первый столбец на мобильных тоже переопределяем */
-    .cart-table td:first-child {
-        text-align: right;
-    }
-    .cart-table td:first-child:before {
-        content: attr(data-label);
-    }
-    .quantity-input {
-        width: 65px;
-        margin: 0;
-        display: inline-block;
-    }
-    .cart-price,
-    .cart-subtotal {
-        white-space: normal;
-    }
-    .cart-actions {
-        flex-direction: column;
-    }
-    .cart-total-line {
-        text-align: center;
-    }
-}
-
-/* Адаптивность */
-@media (max-width: 800px) {
-    .items-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    }
-    .burger-btn {
-        display: block;
-    }
-    .nav-links {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        margin-top: 15px;
-        border-top: 2px solid white;
-        padding-top: 15px;
-    }
-    .nav-links.active {
-        display: flex;
-    }
-    .nav-links a {
-        margin: 5px 0;
-    }
-    .cart-table, .cart-table thead, .cart-table tbody, .cart-table th, .cart-table td, .cart-table tr {
-        display: block;
-    }
-    .cart-table tr {
-        margin-bottom: 20px;
-        border: 2px solid white;
-    }
-    .cart-table td {
-        border: none;
-        border-bottom: 1px solid #333;
-    }
-}
 
 @media (max-width: 500px) {
     body {

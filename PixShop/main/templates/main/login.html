@@ -1,36 +1,20 @@
+{% extends 'main/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Вход — PixShop</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'main/css/styles.css' %}">
-    <style>
-        input {
-            font-family: monospace;
-            background: #111;
-            border: 2px solid #fff;
-            color: #fff;
-            padding: 8px;
-            width: 100%;
-            margin-bottom: 15px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-    </style>
-</head>
-<body>
-<div class="container" style="max-width: 500px;">
-    <h1 style="font-size: 1rem;">🔐 ВХОД В PIXSHOP</h1>
-    <form method="post">
+
+{% block title %}Вход — PixShop{% endblock %}
+
+{% block breadcrumbs %}
+<a href="{% url 'item_list' %}">Главная</a> → Вход
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 0 auto;">
+    <h1>ВХОД</h1>
+    <form method="post" style="margin-top: 30px;">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn-add" style="width: 100%;">ВОЙТИ</button>
     </form>
     <p style="margin-top: 20px; font-size: 0.6rem;">Нет аккаунта? <a href="{% url 'register' %}" style="color: white;">Регистрация</a></p>
-    <p><a href="{% url 'item_list' %}" style="color: white; font-size: 0.6rem;">← На главную</a></p>
 </div>
-</body>
-</html>
+{% endblock %}

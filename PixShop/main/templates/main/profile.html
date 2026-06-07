@@ -1,71 +1,35 @@
+{% extends 'main/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Профиль — PixShop</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'main/css/styles.css' %}">
-    <style>
-        .order-card {
-            background: #111;
-            border: 2px solid white;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid #555;
-            padding-bottom: 8px;
-            margin-bottom: 10px;
-            font-size: 0.7rem;
-        }
-        .order-items {
-            font-size: 0.6rem;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="header">
-        <div class="logo">
-            <h1>PIXSHOP</h1>
-        </div>
-        <div class="nav-links">
-            <a href="{% url 'item_list' %}">ГЛАВНАЯ</a>
-            <a href="{% url 'cart_detail' %}">КОРЗИНА</a>
-            <a href="{% url 'logout' %}">ВЫЙТИ</a>
-        </div>
-    </div>
 
-    <h2 style="font-size: 1rem;">ПРОФИЛЬ: {{ user.email }}</h2>
-    <p style="font-size: 0.6rem;">{{ user.first_name }} {{ user.last_name }} | Адрес: {{ user.adress }}</p>
+{% block title %}Профиль — PixShop{% endblock %}
 
-    <h3 style="margin-top: 30px;">ИСТОРИЯ ЗАКАЗОВ</h3>
-    {% if orders %}
-        {% for order in orders %}
-            <div class="order-card">
-                <div class="order-header">
-                    <span>ЗАКАЗ №{{ order.id }}</span>
-                    <span>{{ order.created_at|date:"d.m.Y H:i" }}</span>
-                    <span>СТАТУС: {{ order.status.name|upper }}</span>
-                    <span>СУММА: {{ order.total_price }} ₽</span>
-                </div>
-                <div class="order-items">
-                    {% for item in order.items.all %}
-                        <div>{{ item.quantity }} x {{ item.item.name }} — {{ item.price }} ₽</div>
-                    {% endfor %}
-                </div>
+{% block breadcrumbs %}
+<a href="{% url 'item_list' %}">Главная</a> → Профиль
+{% endblock %}
+
+{% block content %}
+<h2>ПРОФИЛЬ: {{ user.email }}</h2>
+<p>{{ user.first_name }} {{ user.last_name }} | Адрес: {{ user.adress }}</p>
+<a href="{% url 'logout' %}" class="btn-add" style="margin-bottom: 20px;">ВЫЙТИ</a>
+
+<h3>ИСТОРИЯ ЗАКАЗОВ</h3>
+{% if orders %}
+    {% for order in orders %}
+        <div class="order-card">
+            <div class="order-header">
+                <span>ЗАКАЗ №{{ order.id }}</span>
+                <span>{{ order.created_at|date:"d.m.Y H:i" }}</span>
+                <span>СТАТУС: {{ order.status.name|upper }}</span>
+                <span>СУММА: {{ order.total_price }} ₽</span>
             </div>
-        {% endfor %}
-    {% else %}
-        <div class="empty-state">У вас пока нет заказов.</div>
-    {% endif %}
-
-    <div class="footer">
-        <p>PIXSHOP © 2026</p>
-    </div>
-</div>
-</body>
-</html>
+            <div class="order-items">
+                {% for item in order.items.all %}
+                    <div>{{ item.quantity }} x {{ item.item.name }} — {{ item.price }} ₽</div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">У вас пока нет заказов.</div>
+{% endif %}
+{% endblock %}

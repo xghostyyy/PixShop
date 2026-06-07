@@ -1,21 +1,14 @@
+{% extends 'main/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Заказ оформлен — PixShop</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'main/css/styles.css' %}">
-</head>
-<body>
-<div class="container" style="max-width: 700px;">
-    <div class="header">
-        <div class="logo"><h1>PIXSHOP</h1></div>
-        <div class="nav-links">
-            <a href="{% url 'item_list' %}">ГЛАВНАЯ</a>
-            <a href="{% url 'profile' %}">ПРОФИЛЬ</a>
-        </div>
-    </div>
+
+{% block title %}Заказ оформлен — PixShop{% endblock %}
+
+{% block breadcrumbs %}
+<a href="{% url 'item_list' %}">Главная</a> → Подтверждение заказа
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 0 auto;">
     <h2>ЗАКАЗ №{{ order.id }} ПРИНЯТ</h2>
     <p>Статус: {{ order.status.name }}</p>
     <p>Сумма: {{ order.total_price }} ₽</p>
@@ -28,5 +21,4 @@
     </ul>
     <a href="{% url 'item_list' %}" class="btn-add">ПРОДОЛЖИТЬ ПОКУПКИ</a>
 </div>
-</body>
-</html>
+{% endblock %}
