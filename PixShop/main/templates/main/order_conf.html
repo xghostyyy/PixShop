@@ -10,13 +10,13 @@
 <body>
 <div class="container" style="max-width: 700px;">
     <div class="header">
-        <div class="logo"><h1>◢ PIXSHOP ◣</h1></div>
+        <div class="logo"><h1>PIXSHOP</h1></div>
         <div class="nav-links">
-            <a href="{% url 'item_list' %}">🏠 ГЛАВНАЯ</a>
-            <a href="{% url 'profile' %}">👤 ПРОФИЛЬ</a>
+            <a href="{% url 'item_list' %}">ГЛАВНАЯ</a>
+            <a href="{% url 'profile' %}">ПРОФИЛЬ</a>
         </div>
     </div>
-    <h2>✅ ЗАКАЗ №{{ order.id }} ПРИНЯТ</h2>
+    <h2>ЗАКАЗ №{{ order.id }} ПРИНЯТ</h2>
     <p>Статус: {{ order.status.name }}</p>
     <p>Сумма: {{ order.total_price }} ₽</p>
     <p>Дата: {{ order.created_at }}</p>

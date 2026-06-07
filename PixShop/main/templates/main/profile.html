@@ -30,20 +30,19 @@
 <div class="container">
     <div class="header">
         <div class="logo">
-            <h1>◢ PIXSHOP ◣</h1>
-            <p>retro // pixel // style</p>
+            <h1>PIXSHOP</h1>
         </div>
         <div class="nav-links">
-            <a href="{% url 'item_list' %}">🏠 ГЛАВНАЯ</a>
-            <a href="{% url 'cart_detail' %}">📦 КОРЗИНА</a>
-            <a href="{% url 'logout' %}">🚪 ВЫЙТИ</a>
+            <a href="{% url 'item_list' %}">ГЛАВНАЯ</a>
+            <a href="{% url 'cart_detail' %}">КОРЗИНА</a>
+            <a href="{% url 'logout' %}">ВЫЙТИ</a>
         </div>
     </div>
 
-    <h2 style="font-size: 1rem;">👤 ПРОФИЛЬ: {{ user.email }}</h2>
+    <h2 style="font-size: 1rem;">ПРОФИЛЬ: {{ user.email }}</h2>
     <p style="font-size: 0.6rem;">{{ user.first_name }} {{ user.last_name }} | Адрес: {{ user.adress }}</p>
 
-    <h3 style="margin-top: 30px;">📋 ИСТОРИЯ ЗАКАЗОВ</h3>
+    <h3 style="margin-top: 30px;">ИСТОРИЯ ЗАКАЗОВ</h3>
     {% if orders %}
         {% for order in orders %}
             <div class="order-card">
