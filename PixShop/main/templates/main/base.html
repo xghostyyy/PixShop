@@ -3,7 +3,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PixShop{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'main/css/styles.css' %}">
@@ -13,56 +13,72 @@
 <div class="container">
     <div class="header">
         <div class="logo">
-            <h1>PIXSHOP</h1>
+            <a href="{% url 'item_list' %}" style="text-decoration:none;"><h1>PIXSHOP</h1></a>
         </div>
-        <div class="nav-links">
+
+        <button class="burger-btn" aria-label="Меню" aria-expanded="false">☰</button>
+
+        <nav class="nav-links" id="main-nav" role="navigation">
             <a href="{% url 'item_list' %}">ГЛАВНАЯ</a>
             <a href="{% url 'catalog' %}">КАТАЛОГ</a>
-            <a href="{% url 'cart_detail' %}" class="cart-link">
-                КОРЗИНА
-                <span id="cart-count" class="cart-count">0</span>
-            </a>
+        
             {% if user.is_authenticated %}
                 <a href="{% url 'profile' %}">ПРОФИЛЬ</a>
             {% else %}
                 <a href="{% url 'login' %}">ВХОД</a>
                 <a href="{% url 'register' %}">РЕГИСТРАЦИЯ</a>
             {% endif %}
-        </div>
+            <a href="{% url 'cart_detail' %}" class="cart-link">
+                КОРЗИНА
+                <span id="cart-count" class="cart-count">0</span>
+            </a>
+        </nav>
     </div>
 
     <div class="breadcrumbs">
         {% block breadcrumbs %}{% endblock %}
     </div>
 
+    {% if messages %}
+        <ul class="messages" style="padding: 0 24px; margin-top: 12px;">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     <main>
         {% block content %}{% endblock %}
     </main>
 
     <div class="footer">
-        <p>PIXSHOP © 2026</p>
+        <p>PIXSHOP © 2026 — PIXEL STORE</p>
     </div>
 </div>
 
 <script>
+    /* Cart counter */
     function updateCartCount() {
         fetch('/api/cart-count/')
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
-                const countSpan = document.getElementById('cart-count');
-                if (countSpan) countSpan.textContent = data.count;
+                const el = document.getElementById('cart-count');
+                if (el) el.textContent = data.count;
             })
-            .catch(error => console.error('Ошибка обновления счётчика:', error));
+            .catch(() => {});
     }
     document.addEventListener('DOMContentLoaded', updateCartCount);
     setInterval(updateCartCount, 5000);
 
-    document.addEventListener('DOMContentLoaded', function() {
-        var burger = document.querySelector('.burger-btn');
-        var nav = document.querySelector('.nav-links');
+    /* Burger menu */
+    document.addEventListener('DOMContentLoaded', function () {
+        const burger = document.querySelector('.burger-btn');
+        const nav = document.getElementById('main-nav');
         if (burger && nav) {
-            burger.addEventListener('click', function() {
-                nav.classList.toggle('active');
+            burger.addEventListener('click', function () {
+                const open = nav.classList.toggle('active');
+                burger.setAttribute('aria-expanded', open);
+                burger.textContent = open ? '✕' : '☰';
             });
         }
     });

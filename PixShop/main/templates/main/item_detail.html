@@ -8,24 +8,30 @@
 {% endblock %}
 
 {% block content %}
-<div style="display: flex; flex-wrap: wrap; gap: 30px;">
-    <div style="flex: 1; min-width: 200px;">
+<div class="item-detail-wrap">
+    <div class="item-detail-image">
         {% if item.image %}
-            <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 100%; image-rendering: pixelated; border: 3px solid white;">
+            <img src="{{ item.image.url }}" alt="{{ item.name }}">
         {% else %}
-            <div class="no-img" style="background: #222; text-align: center; padding: 50px;">НЕТ ИЗОБРАЖЕНИЯ</div>
+            <div class="item-image" style="aspect-ratio:1; border:3px solid var(--border);">
+                <div class="no-img">НЕТ<br>ИЗОБРАЖЕНИЯ</div>
+            </div>
         {% endif %}
     </div>
-    <div style="flex: 2;">
-        <h1 style="font-size: 1.2rem;">{{ item.name|upper }}</h1>
-        <p class="item-price" style="display: inline-block;">{{ item.price }} ₽</p>
-        <div class="item-categories" style="margin: 15px 0;">
+    <div class="item-detail-info">
+        <h1>{{ item.name|upper }}</h1>
+        <div class="item-price">{{ item.price }} ₽</div>
+        <div class="item-categories" style="margin: 16px 0;">
             {% for cat in item.categories.all %}
                 <span>{{ cat.name|lower }}</span>
+            {% empty %}
+                <span>без категории</span>
             {% endfor %}
         </div>
-        <p style="font-size: 0.7rem; line-height: 1.5;">{{ item.description|linebreaks }}</p>
-        <a href="{% url 'add_to_cart' item.id %}" class="btn-add" style="margin-top: 20px;">В КОРЗИНУ</a>
+        <div class="description">
+            {{ item.description|linebreaks }}
+        </div>
+        <a href="{% url 'add_to_cart' item.id %}" class="btn-add btn-primary">В КОРЗИНУ</a>
     </div>
 </div>
 {% endblock %}
