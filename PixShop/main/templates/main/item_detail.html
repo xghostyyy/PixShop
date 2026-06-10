@@ -3,6 +3,22 @@
 
 {% block title %}{{ item.name }} — PixShop{% endblock %}
 
+{% block extra_head %}
+<style>
+.stock-badge {
+    display: inline-block;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.55rem;
+    padding: 5px 10px;
+    margin: 12px 0 16px;
+    border: 2px solid;
+}
+.stock-ok   { color: #4ade80; border-color: #4ade80; background: rgba(74,222,128,0.08); }
+.stock-low  { color: #facc15; border-color: #facc15; background: rgba(250,204,21,0.08); }
+.stock-none { color: var(--danger); border-color: var(--danger); background: rgba(230,57,70,0.08); }
+</style>
+{% endblock %}
+
 {% block breadcrumbs %}
 <a href="{% url 'item_list' %}">Главная</a> → <a href="{% url 'catalog' %}">Каталог</a> → {{ item.name|upper }}
 {% endblock %}
@@ -21,6 +37,7 @@
     <div class="item-detail-info">
         <h1>{{ item.name|upper }}</h1>
         <div class="item-price">{{ item.price }} ₽</div>
+
         <div class="item-categories" style="margin: 16px 0;">
             {% for cat in item.categories.all %}
                 <span>{{ cat.name|lower }}</span>
@@ -28,10 +45,30 @@
                 <span>без категории</span>
             {% endfor %}
         </div>
+
+        <!-- Складской остаток -->
+        <div class="stock-badge {% if item.quantity == 0 %}stock-none{% elif item.quantity <= 3 %}stock-low{% else %}stock-ok{% endif %}">
+            {% if item.quantity == 0 %}
+                НЕТ В НАЛИЧИИ
+            {% elif item.quantity <= 3 %}
+                ОСТАЛОСЬ: {{ item.quantity }} ШТ.
+            {% else %}
+                В НАЛИЧИИ
+            {% endif %}
+        </div>
+
         <div class="description">
             {{ item.description|linebreaks }}
         </div>
-        <a href="{% url 'add_to_cart' item.id %}" class="btn-add btn-primary">В КОРЗИНУ</a>
+
+        {% if item.quantity > 0 %}
+            <a href="{% url 'add_to_cart' item.id %}" class="btn-add btn-primary">В КОРЗИНУ</a>
+        {% else %}
+            <button class="btn-add" disabled
+                    style="opacity:0.4; cursor:not-allowed; border-color:var(--text-muted);">
+                НЕТ В НАЛИЧИИ
+            </button>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

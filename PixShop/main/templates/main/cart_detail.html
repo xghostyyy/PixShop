@@ -116,5 +116,11 @@
             updateCartItem(itemId, currentQty + 1);
         });
     });
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const itemId = this.dataset.itemId;
+        updateCartItem(itemId, 0);
+    });
+});
 </script>
 {% endblock %}

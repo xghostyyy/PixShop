@@ -57,7 +57,6 @@
 </div>
 
 <script>
-    /* Cart counter */
     function updateCartCount() {
         fetch('/api/cart-count/')
             .then(r => r.json())
@@ -70,7 +69,6 @@
     document.addEventListener('DOMContentLoaded', updateCartCount);
     setInterval(updateCartCount, 5000);
 
-    /* Burger menu */
     document.addEventListener('DOMContentLoaded', function () {
         const burger = document.querySelector('.burger-btn');
         const nav = document.getElementById('main-nav');

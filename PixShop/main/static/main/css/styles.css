@@ -6,7 +6,7 @@
 }
 
 :root {
-    --bg:        #0d0d0d;
+    --bg:        #312a3a;
     --surface:   #141420;
     --surface2:  #1a1a2e;
     --border:    #3a3a5c;
@@ -37,6 +37,8 @@ body {
         rgba(0,0,0,0.08) 2px,
         rgba(0,0,0,0.08) 4px
     );
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
 }
 
@@ -48,6 +50,9 @@ body {
     border: 3px solid var(--border);
     box-shadow: var(--pixel-shadow);
     overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ---- HEADER ---- */
@@ -165,6 +170,7 @@ body {
 main {
     padding: 24px;
     min-height: 400px;
+    flex-grow: 1;
 }
 
 h1, h2, h3 {
@@ -611,7 +617,6 @@ ul.errorlist {
 
 /* ---- FOOTER ---- */
 .footer {
-    margin-top: 0;
     padding: 18px 24px;
     border-top: 3px solid var(--border);
     text-align: center;
@@ -689,7 +694,11 @@ ul.errorlist {
         padding: 10px;
     }
 
-    main { padding: 16px; }
+    main {
+        padding: 24px;
+        min-height: 400px;
+        flex: 1;
+    }
 
     .breadcrumbs { padding: 8px 16px; }
 
