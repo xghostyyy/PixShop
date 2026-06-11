@@ -1,24 +1,31 @@
+{# _item_card.html #}
 {% with images=item.get_all_images %}
 <div class="item-card" data-href="{% url 'item_detail' item.id %}">
 
+    <!-- ── ФОТО + стрелки ── -->
     <div class="item-image">
         {% if images %}
             {% for url in images %}
                 <img src="{{ url }}" alt="{{ item.name }}" loading="lazy"
                      {% if forloop.first %}class="active"{% endif %}>
             {% endfor %}
+            {% if images|length > 1 %}
+                <button class="card-arrow card-arrow--prev" aria-label="Предыдущее фото">&#9664;</button>
+                <button class="card-arrow card-arrow--next" aria-label="Следующее фото">&#9654;</button>
+            {% endif %}
         {% else %}
             <div class="no-img">НЕТ ФОТО</div>
         {% endif %}
     </div>
 
+    <!-- ── КОНТЕНТ ── -->
     <div class="item-body">
-        {# Ссылка-оверлей на весь блок текста + ::after на весь div.item-card #}
-        <a href="{% url 'item_detail' item.id %}" class="card-overlay-link" tabindex="-1"
-           aria-hidden="true"></a>
+        <a href="{% url 'item_detail' item.id %}" class="card-overlay-link"
+           tabindex="-1" aria-hidden="true"></a>
 
         <div class="item-title">{{ item.name|upper }}</div>
         <div class="item-price">{{ item.price }} ₽</div>
+
         <div class="item-categories">
             {% for cat in item.categories.all %}
                 <a href="{% url 'catalog' %}?category={{ cat.id }}"
@@ -27,6 +34,13 @@
                 <span class="cat-tag cat-tag--empty">без категории</span>
             {% endfor %}
         </div>
+
+        {% if item.quantity > 0 %}
+            <a href="{% url 'add_to_cart' item.id %}" class="btn-add btn-cart"
+               onclick="event.stopPropagation();">В КОРЗИНУ</a>
+        {% else %}
+            <span class="btn-add btn-cart btn-cart--disabled">НЕТ В НАЛИЧИИ</span>
+        {% endif %}
     </div>
 
 </div>

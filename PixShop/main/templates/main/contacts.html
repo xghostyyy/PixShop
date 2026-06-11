@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+{% block title %}Контакты — PixShop{% endblock %}
+{% block breadcrumbs %}<a href="{% url 'item_list' %}">Главная</a> → Контакты{% endblock %}
+
+{% block content %}
+<div class="static-page">
+    <h1>КОНТАКТЫ</h1>
+    <p class="meta">Работаем ежедневно 10:00 – 22:00 (МСК)</p>
+
+    <div class="contact-item">
+        <span class="contact-label">E-MAIL</span>
+        <span><a href="mailto:support@pixshop.ru">support@pixshop.ru</a></span>
+    </div>
+    <div class="contact-item">
+        <span class="contact-label">ТЕЛЕФОН</span>
+        <span><a href="tel:+78001234567">8 800 123-45-67</a> — бесплатно по России</span>
+    </div>
+    <div class="contact-item">
+        <span class="contact-label">TELEGRAM</span>
+        <span><a href="https://t.me/pixshop_support" target="_blank" rel="noopener">@pixshop_support</a></span>
+    </div>
+    <div class="contact-item">
+        <span class="contact-label">АДРЕС</span>
+        <span>г. Москва, ул. Пиксельная, д. 8, корп. 2</span>
+    </div>
+    <div class="contact-item">
+        <span class="contact-label">РЕКВИЗИТЫ</span>
+        <span>ООО «ПиксШоп» · ИНН 7700000000 · ОГРН 1007700000000</span>
+    </div>
+
+    <p style="margin-top:32px; font-size:.8rem; color:var(--text-muted);">
+        По вопросам возврата и качества товаров пишите на e-mail с темой «Возврат — №заказа».
+        Мы отвечаем в течение одного рабочего дня.
+    </p>
+</div>
+{% endblock %}

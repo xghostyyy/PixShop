@@ -1,25 +1,37 @@
 import json
+
 from django.contrib import messages
 from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+
 from .forms import PixPasswordChangeForm, ProfileUpdateForm, UserRegisterForm
 from .models import Category, Item, Order, Order_item, Status
 
 
+# ─────────────────────────────────────────────────────────────────────────────
 #  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+# ─────────────────────────────────────────────────────────────────────────────
 
 def _get_cart(request):
+    """Возвращает корзину из сессии. Ключи — строки, значения — int."""
     return request.session.get('cart', {})
 
 
 def _save_cart(request, cart):
+    """Сохраняет корзину и помечает сессию изменённой."""
     request.session['cart'] = cart
     request.session.modified = True
 
 
 def _cart_items_with_totals(cart):
+    """
+    По словарю корзины возвращает (cart_entries, total).
+
+    cart_entries — список dict с ключами: item, quantity, subtotal.
+    Один запрос к БД с prefetch категорий.
+    """
     if not cart:
         return [], 0
 
@@ -40,9 +52,12 @@ def _cart_items_with_totals(cart):
     return entries, total
 
 
+# ─────────────────────────────────────────────────────────────────────────────
 #  КАТАЛОГ / ТОВАРЫ
+# ─────────────────────────────────────────────────────────────────────────────
 
 def item_list(request):
+    """Главная страница — выводим все доступные товары."""
     items = (
         Item.objects
         .filter(available=True)
@@ -61,12 +76,19 @@ def item_detail(request, item_id):
 
 
 def catalog(request):
+    """
+    Каталог с фильтрацией по категории и сортировкой.
+
+    GET-параметры:
+      category — id категории (опционально)
+      sort     — один из: name_asc | name_desc | price_asc | price_desc | newest
+    """
     SORT_MAP = {
         'name_asc':   'name',
         'name_desc':  '-name',
         'price_asc':  'price',
         'price_desc': '-price',
-        'newest':     '-id', 
+        'newest':     '-id',        # нет поля created_at у Item, используем pk
     }
 
     categories = Category.objects.all()
@@ -89,9 +111,15 @@ def catalog(request):
     })
 
 
+# ─────────────────────────────────────────────────────────────────────────────
 #  КОРЗИНА
+# ─────────────────────────────────────────────────────────────────────────────
 
 def add_to_cart(request, item_id):
+    """
+    Добавляет товар в корзину.
+    Проверяет: товар существует, доступен и есть на складе.
+    """
     item = get_object_or_404(Item, id=item_id, available=True)
     cart = _get_cart(request)
 
@@ -124,6 +152,7 @@ def cart_detail(request):
 
 
 def update_cart_item(request, item_id):
+    """Обновление количества через обычную форму (не AJAX)."""
     if request.method == 'POST':
         quantity = int(request.POST.get('quantity', 0))
         cart = _get_cart(request)
@@ -141,6 +170,11 @@ def update_cart_item(request, item_id):
 
 
 def update_cart_ajax(request):
+    """
+    AJAX-обновление корзины.
+    Принимает JSON: {item_id, quantity}.
+    quantity == 0 означает удаление товара.
+    """
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'Метод не разрешён'}, status=405)
 
@@ -157,6 +191,7 @@ def update_cart_ajax(request):
     cart = _get_cart(request)
 
     if quantity > 0:
+        # Проверяем остаток
         try:
             item = Item.objects.get(id=item_id, available=True)
         except Item.DoesNotExist:
@@ -174,6 +209,7 @@ def update_cart_ajax(request):
 
     _save_cart(request, cart)
 
+    # Пересчёт итогов
     items_qs = Item.objects.filter(id__in=cart.keys(), available=True)
     total = sum(item.price * cart[str(item.id)] for item in items_qs)
     new_subtotal = 0
@@ -194,10 +230,21 @@ def cart_count_api(request):
     return JsonResponse({'count': sum(cart.values())})
 
 
+# ─────────────────────────────────────────────────────────────────────────────
 #  ОФОРМЛЕНИЕ ЗАКАЗА
+# ─────────────────────────────────────────────────────────────────────────────
 
 @login_required
 def checkout(request):
+    """
+    Оформляет заказ из корзины.
+
+    Перед созданием заказа:
+    1. Проверяем, что корзина не пуста.
+    2. Для каждой позиции проверяем наличие на складе.
+    3. Списываем остатки (item.quantity -= qty).
+    4. Создаём Order + Order_item, очищаем корзину.
+    """
     cart = _get_cart(request)
     if not cart:
         messages.error(request, 'Корзина пуста.')
@@ -206,7 +253,7 @@ def checkout(request):
     items = list(
         Item.objects
         .filter(id__in=cart.keys(), available=True)
-        .select_for_update()   
+        .select_for_update()   # блокировка строк на время транзакции
     )
 
     if not items:
@@ -214,7 +261,7 @@ def checkout(request):
         _save_cart(request, {})
         return redirect('catalog')
 
-    # Проверка остатков
+    # ── Проверка остатков ──────────────────────────────────────────────────
     errors = []
     for item in items:
         needed = cart[str(item.id)]
@@ -228,7 +275,7 @@ def checkout(request):
             messages.error(request, err)
         return redirect('cart_detail')
 
-    # Создаём заказ 
+    # ── Создаём заказ ──────────────────────────────────────────────────────
     from django.db import transaction
 
     status_new, _ = Status.objects.get_or_create(name='Новый')
@@ -268,10 +315,17 @@ def order_conf(request, order_id):
     return render(request, 'main/order_conf.html', {'order': order})
 
 
+# ─────────────────────────────────────────────────────────────────────────────
 #  ПРОФИЛЬ
+# ─────────────────────────────────────────────────────────────────────────────
 
 @login_required
 def profile(request):
+    """
+    Профиль пользователя.
+    Содержит две независимые формы: смена адреса и смена пароля.
+    Различаем их по скрытому полю `form_type` в POST-данных.
+    """
     user = request.user
     profile_form = ProfileUpdateForm(instance=user)
     password_form = PixPasswordChangeForm(user=user)
@@ -311,7 +365,9 @@ def profile(request):
     })
 
 
+# ─────────────────────────────────────────────────────────────────────────────
 #  РЕГИСТРАЦИЯ
+# ─────────────────────────────────────────────────────────────────────────────
 
 def register(request):
     if request.method == 'POST':
@@ -324,3 +380,17 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request, 'main/register.html', {'form': form})
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  СТАТИЧЕСКИЕ СТРАНИЦЫ
+# ─────────────────────────────────────────────────────────────────────────────
+
+def offer(request):
+    return render(request, 'main/offer.html')
+
+def privacy(request):
+    return render(request, 'main/privacy.html')
+
+def contacts(request):
+    return render(request, 'main/contacts.html')

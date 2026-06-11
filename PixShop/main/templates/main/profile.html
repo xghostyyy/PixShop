@@ -9,64 +9,67 @@
 
 {% block content %}
 <h2>ПРОФИЛЬ</h2>
-<p style="font-size:0.8rem; margin-bottom:24px; color:var(--text-muted);">{{ user.email }}</p>
+<p style="font-size:.82rem; color:var(--text-muted); margin-bottom:28px;">{{ user.email }}</p>
 
-<!-- СЕКЦИЯ: Данные профиля (адрес, имя)-->
+<!-- ═══ 1. ЛИЧНЫЕ ДАННЫЕ (сворачиваемая) ══════════════════════════════════ -->
 <div class="profile-section">
-    <h3>ЛИЧНЫЕ ДАННЫЕ</h3>
-
-    {% if profile_form.errors %}
-        <div class="form-errors">
-            {% for field in profile_form %}
-                {% for error in field.errors %}
-                    <p class="error-msg">{{ field.label }}: {{ error }}</p>
-                {% endfor %}
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    <form method="post" style="max-width:520px;">
-        {% csrf_token %}
-        <input type="hidden" name="form_type" value="profile">
-        {{ profile_form.as_p }}
-        <button type="submit" class="btn-add btn-primary" style="margin-top:8px;">
-            СОХРАНИТЬ ДАННЫЕ
-        </button>
-    </form>
+    <div class="collapsible-header" data-target="section-profile"
+         {% if profile_form.errors %}data-open="true"{% endif %}>
+        <h3>ЛИЧНЫЕ ДАННЫЕ И АДРЕС</h3>
+        <span class="collapsible-icon {% if profile_form.errors %}open{% endif %}">▼</span>
+    </div>
+    <div class="collapsible-body {% if profile_form.errors %}open{% endif %}" id="section-profile">
+        {% if profile_form.errors %}
+            <div class="form-errors">
+                {% for field in profile_form %}{% for err in field.errors %}
+                    <p class="error-msg">{{ field.label }}: {{ err }}</p>
+                {% endfor %}{% endfor %}
+            </div>
+        {% endif %}
+        <form method="post" style="max-width:520px;">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="profile">
+            {{ profile_form.as_p }}
+            <button type="submit" class="btn-add btn-primary" style="margin-top:8px;">
+                СОХРАНИТЬ
+            </button>
+        </form>
+    </div>
 </div>
 
-<!--СЕКЦИЯ: Смена пароля-->
+<!-- ═══ 2. СМЕНА ПАРОЛЯ (сворачиваемая) ══════════════════════════════════ -->
 <div class="profile-section">
-    <h3>СМЕНИТЬ ПАРОЛЬ</h3>
-
-    {% if password_form.errors %}
-        <div class="form-errors">
-            {% for field in password_form %}
-                {% for error in field.errors %}
-                    <p class="error-msg">{{ field.label }}: {{ error }}</p>
+    <div class="collapsible-header" data-target="section-password"
+         {% if password_form.errors %}data-open="true"{% endif %}>
+        <h3>СМЕНИТЬ ПАРОЛЬ</h3>
+        <span class="collapsible-icon {% if password_form.errors %}open{% endif %}">▼</span>
+    </div>
+    <div class="collapsible-body {% if password_form.errors %}open{% endif %}" id="section-password">
+        {% if password_form.errors %}
+            <div class="form-errors">
+                {% for field in password_form %}{% for err in field.errors %}
+                    <p class="error-msg">{{ field.label }}: {{ err }}</p>
+                {% endfor %}{% endfor %}
+                {% for err in password_form.non_field_errors %}
+                    <p class="error-msg">{{ err }}</p>
                 {% endfor %}
-            {% endfor %}
-            {% for error in password_form.non_field_errors %}
-                <p class="error-msg">{{ error }}</p>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    <form method="post" style="max-width:520px;">
-        {% csrf_token %}
-        <input type="hidden" name="form_type" value="password">
-        {{ password_form.as_p }}
-        <button type="submit" class="btn-add" style="margin-top:8px;">
-            ИЗМЕНИТЬ ПАРОЛЬ
-        </button>
-    </form>
+            </div>
+        {% endif %}
+        <form method="post" style="max-width:520px;">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="password">
+            {{ password_form.as_p }}
+            <button type="submit" class="btn-add" style="margin-top:8px;">
+                ИЗМЕНИТЬ ПАРОЛЬ
+            </button>
+        </form>
+    </div>
 </div>
 
-<!--СЕКЦИЯ: Выход из аккаунта-->
+<!-- ═══ 3. ВЫХОД ═══════════════════════════════════════════════════════════ -->
 <div class="profile-section">
     <h3>АККАУНТ</h3>
-    {# Logout обязан быть POST-запросом (защита от CSRF/случайного выхода) #}
-    <form method="post" action="{% url 'logout' %}">
+    <form method="post" action="{% url 'logout' %}" style="margin-top:12px;">
         {% csrf_token %}
         <button type="submit" class="btn-add" style="border-color:var(--danger);">
             ВЫЙТИ ИЗ АККАУНТА
@@ -74,7 +77,7 @@
     </form>
 </div>
 
-<!--СЕКЦИЯ: История заказов-->
+<!-- ═══ 4. ИСТОРИЯ ЗАКАЗОВ ════════════════════════════════════════════════ -->
 <div class="profile-section">
     <h3>ИСТОРИЯ ЗАКАЗОВ</h3>
     {% if orders %}
@@ -101,25 +104,18 @@
     {% endif %}
 </div>
 
-<style>
-.profile-section {
-    margin-bottom: 40px;
-    padding-bottom: 32px;
-    border-bottom: 2px solid var(--border);
-}
-.profile-section:last-child {
-    border-bottom: none;
-}
-.form-errors {
-    background: rgba(230,57,70,0.1);
-    border-left: 4px solid var(--danger);
-    padding: 10px 14px;
-    margin-bottom: 14px;
-}
-.error-msg {
-    font-size: 0.75rem;
-    color: var(--danger);
-    margin: 4px 0;
-}
-</style>
+<script>
+/* Collapsible sections */
+document.querySelectorAll('.collapsible-header').forEach(header => {
+    const targetId = header.dataset.target;
+    const body     = document.getElementById(targetId);
+    const icon     = header.querySelector('.collapsible-icon');
+    if (!body) return;
+
+    header.addEventListener('click', () => {
+        const isOpen = body.classList.toggle('open');
+        icon.classList.toggle('open', isOpen);
+    });
+});
+</script>
 {% endblock %}
