@@ -8,10 +8,10 @@
 {% endblock %}
 
 {% block content %}
-<h2 style="font-size: 0.9rem; margin-bottom: 20px;">Пиксельная подборка</h2>
+<h2 style="font-size: 0.9rem; margin-bottom: 20px;">Подборка товаров</h2>
 <div class="items-grid">
     {% for item in items %}
-        {% include 'main/_item_card.html' with item=item %}
+        {% include 'main/item_card.html' with item=item %}
     {% empty %}
         <div class="empty-state">НЕТ ТОВАРОВ</div>
     {% endfor %}

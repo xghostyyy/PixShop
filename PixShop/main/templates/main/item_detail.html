@@ -19,6 +19,7 @@
             {% if images %}
                 {% for url in images %}
                     <img src="{{ url }}" alt="{{ item.name }} — фото {{ forloop.counter }}"
+                         data-src="{{ url }}"
                          {% if forloop.first %}class="active"{% endif %}>
                 {% endfor %}
                 {% if images|length > 1 %}
@@ -63,7 +64,7 @@
             {{ item.description|linebreaks }}
         </div>
 
-        <!-- Категории — клик ведёт в каталог с фильтром -->
+        <!-- Категории -->
         <div class="item-categories">
             {% for cat in item.categories.all %}
                 <a href="{% url 'catalog' %}?category={{ cat.id }}"
@@ -96,16 +97,39 @@
     </div>
 </div>
 
-{% if images|length > 1 %}
+<!-- ══ ZOOM OVERLAY (превью при наведении) ══ -->
+<div id="zoom-overlay" style="
+    display:none; position:fixed; inset:0; z-index:999;
+    background:rgba(0,0,0,.85);
+    align-items:center; justify-content:center;
+    cursor:zoom-out;
+">
+    <img id="zoom-img" src="" alt="Увеличенное фото" style="
+        max-width:90vw; max-height:90vh;
+        object-fit:contain;
+        image-rendering:pixelated;
+        border:3px solid var(--border);
+        box-shadow: 0 0 60px rgba(65,105,225,.4);
+    ">
+    <div style="
+        position:absolute; top:18px; right:24px;
+        font-family:var(--font-pixel); font-size:.55rem;
+        color:var(--text-muted); pointer-events:none;
+    ">ESC / КЛИК — ЗАКРЫТЬ</div>
+</div>
+
 <script>
 (function () {
     const mainEl = document.getElementById('gallery-main');
-    const imgs   = mainEl ? mainEl.querySelectorAll('img') : [];
-    const dots   = document.querySelectorAll('#gallery-dots .gallery-dot');
-    const thumbs = document.querySelectorAll('.gallery-thumb');
+    if (!mainEl) return;
+
+    const imgs   = Array.from(mainEl.querySelectorAll('img'));
+    const dots   = Array.from(document.querySelectorAll('#gallery-dots .gallery-dot'));
+    const thumbs = Array.from(document.querySelectorAll('.gallery-thumb'));
+
     if (!imgs.length) return;
 
-    /* Передаём управление JS */
+    /* ── Инициализация ── */
     mainEl.classList.add('js-ready');
     let cur = 0;
     imgs[0].classList.add('active');
@@ -120,23 +144,60 @@
         thumbs[cur]?.classList.add('active');
     }
 
+    /* ── Стрелки ── */
     document.getElementById('gallery-prev')
         ?.addEventListener('click', () => go(cur - 1));
     document.getElementById('gallery-next')
         ?.addEventListener('click', () => go(cur + 1));
 
-    dots.forEach(d   => d.addEventListener('click',  () => go(+d.dataset.idx)));
-    thumbs.forEach(t => t.addEventListener('click',  () => go(+t.dataset.idx)));
+    /* ── Точки и миниатюры ── */
+    dots.forEach(d   => d.addEventListener('click', () => go(+d.dataset.idx)));
+    thumbs.forEach(t => t.addEventListener('click', () => go(+t.dataset.idx)));
 
-    /* Touch / swipe */
+    /* ── Свайп ── */
     let tx = 0;
     mainEl.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
     mainEl.addEventListener('touchend',   e => {
         const dx = e.changedTouches[0].clientX - tx;
         if (Math.abs(dx) > 40) go(dx < 0 ? cur + 1 : cur - 1);
     });
+
+    /* ── Клавиатура ── */
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft')  go(cur - 1);
+        if (e.key === 'ArrowRight') go(cur + 1);
+    });
+
+    /* ══ ZOOM OVERLAY ══ */
+    const overlay  = document.getElementById('zoom-overlay');
+    const zoomImg  = document.getElementById('zoom-img');
+
+    function openZoom() {
+        const src = imgs[cur].getAttribute('data-src') || imgs[cur].src;
+        zoomImg.src = src;
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeZoom() {
+        overlay.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    /* Клик по основному изображению */
+    mainEl.addEventListener('click', e => {
+        /* Не открываем, если кликнули по стрелке */
+        if (e.target.closest('.gallery-arrow')) return;
+        openZoom();
+    });
+    mainEl.style.cursor = 'zoom-in';
+
+    overlay.addEventListener('click', closeZoom);
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeZoom();
+    });
 })();
 </script>
-{% endif %}
 {% endwith %}
 {% endblock %}
