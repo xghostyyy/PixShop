@@ -11,10 +11,6 @@
 <h2>ПРОФИЛЬ</h2>
 <p style="font-size:.82rem; color:var(--text-muted); margin-bottom:28px;">{{ user.email }}</p>
 
-<<<<<<< HEAD
-=======
-<!-- ═══ 1. ЛИЧНЫЕ ДАННЫЕ (сворачиваемая) ══════════════════════════════════ -->
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
 <div class="profile-section">
     <div class="collapsible-header" data-target="section-profile"
          {% if profile_form.errors %}data-open="true"{% endif %}>
@@ -40,10 +36,6 @@
     </div>
 </div>
 
-<<<<<<< HEAD
-=======
-<!-- ═══ 2. СМЕНА ПАРОЛЯ (сворачиваемая) ══════════════════════════════════ -->
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
 <div class="profile-section">
     <div class="collapsible-header" data-target="section-password"
          {% if password_form.errors %}data-open="true"{% endif %}>
@@ -72,10 +64,6 @@
     </div>
 </div>
 
-<<<<<<< HEAD
-=======
-<!-- ═══ 3. ВЫХОД ═══════════════════════════════════════════════════════════ -->
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
 <div class="profile-section">
     <h3>АККАУНТ</h3>
     <form method="post" action="{% url 'logout' %}" style="margin-top:12px;">
@@ -86,10 +74,6 @@
     </form>
 </div>
 
-<<<<<<< HEAD
-=======
-<!-- ═══ 4. ИСТОРИЯ ЗАКАЗОВ ════════════════════════════════════════════════ -->
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
 <div class="profile-section">
     <h3>ИСТОРИЯ ЗАКАЗОВ</h3>
     {% if orders %}
@@ -117,10 +101,6 @@
 </div>
 
 <script>
-<<<<<<< HEAD
-=======
-/* Collapsible sections */
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
 document.querySelectorAll('.collapsible-header').forEach(header => {
     const targetId = header.dataset.target;
     const body     = document.getElementById(targetId);

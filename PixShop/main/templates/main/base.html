@@ -12,11 +12,7 @@
 <body>
 <div class="container">
 
-<<<<<<< HEAD
     
-=======
-    <!-- ── HEADER ── -->
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
     <header class="header">
         <div class="logo">
             <a href="{% url 'item_list' %}"><h1>PIXSHOP</h1></a>
@@ -38,17 +34,10 @@
         </nav>
     </header>
 
-<<<<<<< HEAD
     
     <div class="breadcrumbs">{% block breadcrumbs %}{% endblock %}</div>
 
     
-=======
-    <!-- ── BREADCRUMBS ── -->
-    <div class="breadcrumbs">{% block breadcrumbs %}{% endblock %}</div>
-
-    <!-- ── MESSAGES ── -->
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
     {% if messages %}
         <ul class="messages">
             {% for message in messages %}
@@ -57,7 +46,6 @@
         </ul>
     {% endif %}
 
-<<<<<<< HEAD
     
     <main>{% block content %}{% endblock %}</main>
 
@@ -91,38 +79,6 @@ document.addEventListener('DOMContentLoaded', updateCartCount);
 setInterval(updateCartCount, 5000);
 
 
-=======
-    <!-- ── CONTENT ── -->
-    <main>{% block content %}{% endblock %}</main>
-
-    <!-- ── FOOTER ── -->
-    <footer class="footer">
-        <span>PIXSHOP © 2026</span>
-        <nav class="footer-links">
-            <a href="{% url 'offer' %}">ОФЕРТА</a>
-            <a href="{% url 'privacy' %}">КОНФИДЕНЦИАЛЬНОСТЬ</a>
-            <a href="{% url 'contacts' %}">КОНТАКТЫ</a>
-        </nav>
-    </footer>
-
-</div><!-- /.container -->
-
-<script>
-/* ── Cart counter ── */
-function updateCartCount() {
-    fetch('/api/cart-count/')
-        .then(r => r.json())
-        .then(d => {
-            const el = document.getElementById('cart-count');
-            if (el) el.textContent = d.count;
-        })
-        .catch(() => {});
-}
-document.addEventListener('DOMContentLoaded', updateCartCount);
-setInterval(updateCartCount, 5000);
-
-/* ── Burger menu ── */
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
 document.addEventListener('DOMContentLoaded', function () {
     const burger = document.getElementById('burger');
     const nav    = document.getElementById('main-nav');
@@ -134,11 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-<<<<<<< HEAD
 
-=======
-/* ── Card appear animation (IntersectionObserver) ── */
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
 document.addEventListener('DOMContentLoaded', function () {
     const cards = document.querySelectorAll('.item-card');
     if (!cards.length) return;
@@ -156,30 +108,18 @@ document.addEventListener('DOMContentLoaded', function () {
     cards.forEach(c => io.observe(c));
 });
 
-<<<<<<< HEAD
 
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.item-card[data-href]').forEach(card => {
         card.addEventListener('click', function (e) {
             
-=======
-/* ── Card click (data-href) ── */
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.item-card[data-href]').forEach(card => {
-        card.addEventListener('click', function (e) {
-            /* Если кликнули по cat-tag, стрелке или кнопке корзины — не переходим */
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
             if (e.target.closest('.cat-tag, .card-arrow, .btn-cart')) return;
             window.location.href = card.dataset.href;
         });
     });
 });
 
-<<<<<<< HEAD
 
-=======
-/* ── Card image slider (hover auto-play + arrows) ── */
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.item-card').forEach(card => {
         const container = card.querySelector('.item-image');
@@ -192,11 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let cur = 0, timer = null;
 
-<<<<<<< HEAD
         
-=======
-        /* Передаём управление JS */
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
         container.classList.add('js-ready');
         imgs[0].classList.add('active');
 
@@ -206,11 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
             imgs[cur].classList.add('active');
         }
 
-<<<<<<< HEAD
         
-=======
-        /* Авто-прокрутка при наведении */
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
         card.addEventListener('mouseenter', () => {
             timer = setInterval(() => showImg(cur + 1), 900);
         });
@@ -219,20 +151,12 @@ document.addEventListener('DOMContentLoaded', function () {
             showImg(0);
         });
 
-<<<<<<< HEAD
         
-=======
-        /* Стрелки — не прерывают auto-play, но сдвигают сразу */
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
         prevBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
             clearInterval(timer);
             showImg(cur - 1);
-<<<<<<< HEAD
             
-=======
-            /* Перезапускаем авто-прокрутку */
->>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
             timer = setInterval(() => showImg(cur + 1), 900);
         });
         nextBtn?.addEventListener('click', (e) => {
