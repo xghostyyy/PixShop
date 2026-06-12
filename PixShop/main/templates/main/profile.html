@@ -76,22 +76,124 @@
 
 <div class="profile-section">
     <h3>ИСТОРИЯ ЗАКАЗОВ</h3>
+
     {% if orders %}
+        <p style="font-size:.68rem; color:var(--text-muted); margin-bottom:16px;">
+            Всего заказов: {{ orders|length }} · Кликните на заказ для просмотра деталей
+        </p>
+
         {% for order in orders %}
-            <div class="order-card">
-                <div class="order-header">
-                    <span>ЗАКАЗ №{{ order.id }}</span>
-                    <span>{{ order.created_at|date:"d.m.Y H:i" }}</span>
-                    <span>{{ order.status.name|upper }}</span>
-                    <span>{{ order.total_price }} ₽</span>
-                </div>
-                <div class="order-items">
-                    {% for oi in order.items.all %}
-                        <div>{{ oi.quantity }} × {{ oi.item.name }} — {{ oi.price }} ₽</div>
-                    {% endfor %}
+        <div class="order-card" id="order-{{ order.id }}">
+
+            <div class="order-header order-header--clickable"
+                 data-target="order-body-{{ order.id }}">
+
+                <span class="order-num">ЗАКАЗ №{{ order.id }}</span>
+
+                <span class="order-meta-pill">
+                    <span class="order-meta-label">ДАТА</span>
+                    {{ order.created_at|date:"d.m.Y H:i" }}
+                </span>
+
+                <span class="order-meta-pill
+                    {% if order.status.name == 'Новый' %}pill-new
+                    {% elif order.status.name == 'Выполнен' %}pill-done
+                    {% elif order.status.name == 'Отменён' %}pill-cancel
+                    {% else %}pill-default{% endif %}">
+                    <span class="order-meta-label">СТАТУС</span>
+                    {{ order.status.name|upper }}
+                </span>
+
+                <span class="order-meta-pill pill-price">
+                    <span class="order-meta-label">СУММА</span>
+                    {{ order.total_price }} ₽
+                </span>
+
+                <span class="order-toggle-icon">▼</span>
+            </div>
+
+            <div class="order-body" id="order-body-{{ order.id }}">
+
+                <div class="order-detail-grid">
+
+                    <div class="order-detail-items">
+                        <table class="order-items-table">
+                            <thead>
+                                <tr>
+                                    <th>ТОВАР</th>
+                                    <th>ЦЕНА</th>
+                                    <th>КОЛ-ВО</th>
+                                    <th>СУММА</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for oi in order.items.all %}
+                                <tr>
+                                    <td data-label="ТОВАР">
+                                        <a href="{% url 'item_detail' oi.item.id %}"
+                                           class="order-item-link">
+                                            {{ oi.item.name|upper }}
+                                        </a>
+                                    </td>
+                                    <td data-label="ЦЕНА">{{ oi.price }} ₽</td>
+                                    <td data-label="КОЛ-ВО">{{ oi.quantity }} шт.</td>
+                                    <td data-label="СУММА">
+                                        <strong>{{ oi.price|floatformat:2 }} ₽</strong>
+                                        <span class="oi-subtotal" data-price="{{ oi.price }}" data-qty="{{ oi.quantity }}"></span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr class="order-total-row">
+                                    <td colspan="3">ИТОГО</td>
+                                    <td>{{ order.total_price }} ₽</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="order-detail-meta">
+                        <div class="odm-block">
+                            <div class="odm-label">НОМЕР ЗАКАЗА</div>
+                            <div class="odm-value">#{{ order.id }}</div>
+                        </div>
+                        <div class="odm-block">
+                            <div class="odm-label">СТАТУС</div>
+                            <div class="odm-value odm-status
+                                {% if order.status.name == 'Новый' %}odm-new
+                                {% elif order.status.name == 'Выполнен' %}odm-done
+                                {% elif order.status.name == 'Отменён' %}odm-cancel
+                                {% else %}odm-default{% endif %}">
+                                {{ order.status.name|upper }}
+                            </div>
+                        </div>
+                        <div class="odm-block">
+                            <div class="odm-label">СОЗДАН</div>
+                            <div class="odm-value">{{ order.created_at|date:"d.m.Y" }}</div>
+                            <div class="odm-sub">{{ order.created_at|date:"H:i" }}</div>
+                        </div>
+                        <div class="odm-block">
+                            <div class="odm-label">ОБНОВЛЁН</div>
+                            <div class="odm-value">{{ order.updated_at|date:"d.m.Y" }}</div>
+                            <div class="odm-sub">{{ order.updated_at|date:"H:i" }}</div>
+                        </div>
+                        <div class="odm-block">
+                            <div class="odm-label">АДРЕС ДОСТАВКИ</div>
+                            <div class="odm-value odm-addr">{{ order.user.adress|default:"—" }}</div>
+                        </div>
+                        <div class="odm-block">
+                            <div class="odm-label">ПОЗИЦИЙ</div>
+                            <div class="odm-value">{{ order.items.count }} шт.</div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
+
+        </div>
         {% endfor %}
+
     {% else %}
         <div class="empty-state">
             <p>ЗАКАЗОВ ЕЩЁ НЕТ</p>
@@ -100,11 +202,208 @@
     {% endif %}
 </div>
 
+<style>
+/* ── Order header clickable ── */
+.order-header--clickable {
+    cursor: pointer;
+    user-select: none;
+    align-items: center;
+    gap: 10px;
+    transition: background .1s;
+}
+.order-header--clickable:hover { background: rgba(65,105,225,.18); }
+
+.order-num {
+    font-family: var(--font-pixel);
+    font-size: .58rem;
+    color: var(--white);
+    white-space: nowrap;
+}
+
+.order-meta-pill {
+    display: inline-flex;
+    flex-direction: column;
+    font-size: .72rem;
+    line-height: 1.3;
+    color: var(--text);
+    white-space: nowrap;
+}
+.order-meta-label {
+    font-family: var(--font-pixel);
+    font-size: .42rem;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+}
+
+/* Статус-пилюли */
+.pill-new     { color: var(--warn); }
+.pill-done    { color: var(--success); }
+.pill-cancel  { color: var(--danger); }
+.pill-default { color: var(--text-muted); }
+.pill-price   { color: var(--white); font-weight: 700; }
+
+.order-toggle-icon {
+    margin-left: auto;
+    font-size: .65rem;
+    color: var(--accent-hi);
+    transition: transform .22s ease;
+    flex-shrink: 0;
+}
+.order-toggle-icon.open { transform: rotate(180deg); }
+
+/* ── Order body (collapsible) ── */
+.order-body {
+    display: none;
+    border-top: 2px solid var(--border);
+    padding: 20px 16px;
+    background: var(--surface);
+    animation: slideDown .2s ease;
+}
+.order-body.open { display: block; }
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Detail grid: table + meta side-by-side ── */
+.order-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 20px;
+    align-items: start;
+}
+@media (max-width: 700px) {
+    .order-detail-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Items table ── */
+.order-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .8rem;
+}
+.order-items-table th,
+.order-items-table td {
+    border: 1px solid var(--border);
+    padding: 9px 12px;
+    text-align: left;
+    vertical-align: middle;
+}
+.order-items-table th {
+    background: var(--surface2);
+    font-family: var(--font-pixel);
+    font-size: .45rem;
+    color: var(--accent-hi);
+    white-space: nowrap;
+}
+.order-items-table tbody tr:hover td {
+    background: rgba(65,105,225,.06);
+}
+.order-items-table tfoot td {
+    font-family: var(--font-pixel);
+    font-size: .62rem;
+    border-top: 2px solid var(--white);
+    background: var(--surface2);
+}
+.order-item-link {
+    color: var(--white);
+    text-decoration: none;
+    font-size: .78rem;
+    font-weight: 600;
+    border-bottom: 1px dotted var(--border);
+    transition: color .1s, border-color .1s;
+}
+.order-item-link:hover { color: var(--accent-hi); border-bottom-color: var(--accent-hi); }
+
+/* ── Detail meta card ── */
+.order-detail-meta {
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.odm-block { border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+.odm-block:last-child { border-bottom: none; padding-bottom: 0; }
+.odm-label {
+    font-family: var(--font-pixel);
+    font-size: .42rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    letter-spacing: .5px;
+}
+.odm-value {
+    font-size: .82rem;
+    color: var(--white);
+    font-weight: 600;
+}
+.odm-sub { font-size: .72rem; color: var(--text-muted); }
+.odm-addr { font-size: .76rem; line-height: 1.5; word-break: break-word; }
+
+/* Статусы в meta-карточке */
+.odm-status { font-family: var(--font-pixel); font-size: .52rem; }
+.odm-new    { color: var(--warn); }
+.odm-done   { color: var(--success); }
+.odm-cancel { color: var(--danger); }
+.odm-default{ color: var(--text-muted); }
+
+/* Mobile: таблица → карточки */
+@media (max-width: 560px) {
+    .order-items-table,
+    .order-items-table thead,
+    .order-items-table tbody,
+    .order-items-table tr,
+    .order-items-table th,
+    .order-items-table td { display: block; }
+    .order-items-table thead { display: none; }
+    .order-items-table tbody tr {
+        margin-bottom: 10px;
+        border: 1px solid var(--border);
+    }
+    .order-items-table td {
+        border: none;
+        border-bottom: 1px solid var(--border);
+        text-align: right;
+        padding: 8px 12px 8px 46%;
+        position: relative;
+        font-size: .78rem;
+    }
+    .order-items-table td:last-child { border-bottom: none; }
+    .order-items-table td::before {
+        content: attr(data-label);
+        position: absolute; left: 10px; width: 40%;
+        text-align: left;
+        font-family: var(--font-pixel);
+        font-size: .42rem;
+        color: var(--accent-hi);
+        padding-top: 2px;
+    }
+    .order-items-table tfoot td {
+        text-align: right;
+        padding: 10px 12px;
+    }
+    .order-items-table tfoot td::before { display: none; }
+}
+</style>
+
 <script>
 document.querySelectorAll('.collapsible-header').forEach(header => {
     const targetId = header.dataset.target;
     const body     = document.getElementById(targetId);
     const icon     = header.querySelector('.collapsible-icon');
+    if (!body) return;
+    header.addEventListener('click', () => {
+        const isOpen = body.classList.toggle('open');
+        icon.classList.toggle('open', isOpen);
+    });
+});
+
+document.querySelectorAll('.order-header--clickable').forEach(header => {
+    const targetId = header.dataset.target;
+    const body     = document.getElementById(targetId);
+    const icon     = header.querySelector('.order-toggle-icon');
     if (!body) return;
 
     header.addEventListener('click', () => {
@@ -112,5 +411,28 @@ document.querySelectorAll('.collapsible-header').forEach(header => {
         icon.classList.toggle('open', isOpen);
     });
 });
+
+document.querySelectorAll('.oi-subtotal').forEach(el => {
+    const price = parseFloat(el.dataset.price);
+    const qty   = parseInt(el.dataset.qty);
+    if (qty > 1) {
+        el.textContent = ` = ${(price * qty).toFixed(2)} ₽`;
+        el.style.color = 'var(--text-muted)';
+        el.style.fontSize = '.72rem';
+    }
+});
+
+(function () {
+    const hash = window.location.hash;
+    if (!hash.startsWith('#order-')) return;
+    const orderId = hash.replace('#order-', '');
+    const body = document.getElementById(`order-body-${orderId}`);
+    const icon = document.querySelector(`[data-target="order-body-${orderId}"] .order-toggle-icon`);
+    if (body) {
+        body.classList.add('open');
+        icon?.classList.add('open');
+        setTimeout(() => body.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+})();
 </script>
 {% endblock %}
