@@ -1,6 +1,10 @@
 {% with images=item.get_all_images %}
 <div class="item-card" data-href="{% url 'item_detail' item.id %}">
 
+<<<<<<< HEAD
+=======
+    <!-- ── ФОТО + стрелки ── -->
+>>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
     <div class="item-image">
         {% if images %}
             {% for url in images %}
@@ -12,6 +16,10 @@
         {% endif %}
     </div>
 
+<<<<<<< HEAD
+=======
+    <!-- ── КОНТЕНТ ── -->
+>>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
     <div class="item-body">
         <a href="{% url 'item_detail' item.id %}" class="card-overlay-link"
            tabindex="-1" aria-hidden="true"></a>

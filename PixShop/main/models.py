@@ -52,6 +52,10 @@ class Item(models.Model):
                             verbose_name='Название товара')
     description = models.TextField(blank=True, verbose_name='Описание')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена')
+<<<<<<< HEAD
+=======
+    # Главное фото (обложка) — остаётся для обратной совместимости
+>>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
     image = models.ImageField(upload_to='items/', blank=True, null=True,
                               verbose_name='Главное изображение')
     categories = models.ManyToManyField(Category, related_name='items',

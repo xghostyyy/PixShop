@@ -12,6 +12,21 @@ def _apply_widgets(fields_dict):
     for field in fields_dict.values():
         field.widget.attrs.update(_WIDGET_ATTRS)
 
+<<<<<<< HEAD
+=======
+# ── Общие атрибуты виджетов ───────────────────────────────────────────────────
+_WIDGET_ATTRS = {'class': 'form-control', 'style': 'font-family: monospace;'}
+
+
+def _apply_widgets(fields_dict):
+    for field in fields_dict.values():
+        field.widget.attrs.update(_WIDGET_ATTRS)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  Регистрация
+# ─────────────────────────────────────────────────────────────────────────────
+>>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
 class UserRegisterForm(UserCreationForm):
     class Meta:
         model = User
@@ -36,6 +51,12 @@ class UserRegisterForm(UserCreationForm):
         _apply_widgets(self.fields)
 
 
+<<<<<<< HEAD
+=======
+# ─────────────────────────────────────────────────────────────────────────────
+#  Обновление профиля
+# ─────────────────────────────────────────────────────────────────────────────
+>>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = User
@@ -52,6 +73,12 @@ class ProfileUpdateForm(forms.ModelForm):
         _apply_widgets(self.fields)
 
 
+<<<<<<< HEAD
+=======
+# ─────────────────────────────────────────────────────────────────────────────
+#  Смена пароля — полностью русифицированная
+# ─────────────────────────────────────────────────────────────────────────────
+>>>>>>> f9f017ecc5325b17a78cc578959547eeffc9a527
 class PixPasswordChangeForm(DjangoPasswordChangeForm):
     old_password = forms.CharField(
         label='Текущий пароль',
