@@ -11,17 +11,16 @@
 </head>
 <body>
 <div class="container">
-    <div class="header">
+
+    
+    <header class="header">
         <div class="logo">
-            <a href="{% url 'item_list' %}" style="text-decoration:none;"><h1>PIXSHOP</h1></a>
+            <a href="{% url 'item_list' %}"><h1>PIXSHOP</h1></a>
         </div>
-
-        <button class="burger-btn" aria-label="Меню" aria-expanded="false">☰</button>
-
-        <nav class="nav-links" id="main-nav" role="navigation">
+        <button class="burger-btn" id="burger" aria-label="Меню" aria-expanded="false">☰</button>
+        <nav class="nav-links" id="main-nav">
             <a href="{% url 'item_list' %}">ГЛАВНАЯ</a>
             <a href="{% url 'catalog' %}">КАТАЛОГ</a>
-        
             {% if user.is_authenticated %}
                 <a href="{% url 'profile' %}">ПРОФИЛЬ</a>
             {% else %}
@@ -33,53 +32,141 @@
                 <span id="cart-count" class="cart-count">0</span>
             </a>
         </nav>
-    </div>
+    </header>
 
-    <div class="breadcrumbs">
-        {% block breadcrumbs %}{% endblock %}
-    </div>
+    
+    <div class="breadcrumbs">{% block breadcrumbs %}{% endblock %}</div>
 
+    
     {% if messages %}
-        <ul class="messages" style="padding: 0 24px; margin-top: 12px;">
+        <ul class="messages">
             {% for message in messages %}
                 <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
             {% endfor %}
         </ul>
     {% endif %}
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+    
+    <main>{% block content %}{% endblock %}</main>
 
-    <div class="footer">
-        <p>PIXSHOP © 2026 — PIXEL STORE</p>
-    </div>
+    
+    <footer class="footer">
+        <span>PIXSHOP © 2026</span>
+        <nav class="footer-links">
+        <a href="https://t.me/xghostyyy">Created by  xghostyyy</a>
+        </nav>
+        <nav class="footer-links">
+            <a href="{% url 'offer' %}">ОФЕРТА</a>
+            <a href="{% url 'privacy' %}">КОНФИДЕНЦИАЛЬНОСТЬ</a>
+            <a href="{% url 'contacts' %}">КОНТАКТЫ</a>
+        </nav>
+    </footer>
+
 </div>
 
 <script>
-    function updateCartCount() {
-        fetch('/api/cart-count/')
-            .then(r => r.json())
-            .then(data => {
-                const el = document.getElementById('cart-count');
-                if (el) el.textContent = data.count;
-            })
-            .catch(() => {});
-    }
-    document.addEventListener('DOMContentLoaded', updateCartCount);
-    setInterval(updateCartCount, 5000);
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const burger = document.querySelector('.burger-btn');
-        const nav = document.getElementById('main-nav');
-        if (burger && nav) {
-            burger.addEventListener('click', function () {
-                const open = nav.classList.toggle('active');
-                burger.setAttribute('aria-expanded', open);
-                burger.textContent = open ? '✕' : '☰';
-            });
-        }
+function updateCartCount() {
+    fetch('/api/cart-count/')
+        .then(r => r.json())
+        .then(d => {
+            const el = document.getElementById('cart-count');
+            if (el) el.textContent = d.count;
+        })
+        .catch(() => {});
+}
+document.addEventListener('DOMContentLoaded', updateCartCount);
+setInterval(updateCartCount, 5000);
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const burger = document.getElementById('burger');
+    const nav    = document.getElementById('main-nav');
+    if (!burger || !nav) return;
+    burger.addEventListener('click', function () {
+        const open = nav.classList.toggle('active');
+        burger.setAttribute('aria-expanded', open);
+        burger.textContent = open ? '✕' : '☰';
     });
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const cards = document.querySelectorAll('.item-card');
+    if (!cards.length) return;
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry, i) => {
+            if (entry.isIntersecting) {
+                // stagger by index
+                const delay = (Array.from(cards).indexOf(entry.target)) * 60;
+                entry.target.style.animationDelay = delay + 'ms';
+                entry.target.classList.add('visible');
+                io.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.08 });
+    cards.forEach(c => io.observe(c));
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.item-card[data-href]').forEach(card => {
+        card.addEventListener('click', function (e) {
+            
+            if (e.target.closest('.cat-tag, .card-arrow, .btn-cart')) return;
+            window.location.href = card.dataset.href;
+        });
+    });
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.item-card').forEach(card => {
+        const container = card.querySelector('.item-image');
+        if (!container) return;
+        const imgs = container.querySelectorAll('img');
+        if (imgs.length < 2) return;
+
+        const prevBtn = container.querySelector('.card-arrow--prev');
+        const nextBtn = container.querySelector('.card-arrow--next');
+
+        let cur = 0, timer = null;
+
+        
+        container.classList.add('js-ready');
+        imgs[0].classList.add('active');
+
+        function showImg(idx) {
+            imgs[cur].classList.remove('active');
+            cur = ((idx % imgs.length) + imgs.length) % imgs.length;
+            imgs[cur].classList.add('active');
+        }
+
+        
+        card.addEventListener('mouseenter', () => {
+            timer = setInterval(() => showImg(cur + 1), 900);
+        });
+        card.addEventListener('mouseleave', () => {
+            clearInterval(timer);
+            showImg(0);
+        });
+
+        
+        prevBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            clearInterval(timer);
+            showImg(cur - 1);
+            
+            timer = setInterval(() => showImg(cur + 1), 900);
+        });
+        nextBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            clearInterval(timer);
+            showImg(cur + 1);
+            timer = setInterval(() => showImg(cur + 1), 900);
+        });
+    });
+});
 </script>
 </body>
 </html>

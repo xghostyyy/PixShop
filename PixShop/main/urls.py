@@ -20,6 +20,11 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('order/<int:order_id>/', views.order_conf, name='order_conf'),
 
-    # Профиль (одна вьюха, две формы внутри)
+    # Профиль
     path('profile/', views.profile, name='profile'),
+
+    # Статические страницы (только в футере)
+    path('offer/', views.offer, name='offer'),
+    path('privacy/', views.privacy, name='privacy'),
+    path('contacts/', views.contacts, name='contacts'),
 ]

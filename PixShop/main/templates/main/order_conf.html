@@ -1,24 +1,51 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
-{% block title %}Заказ оформлен — PixShop{% endblock %}
+{% block title %}Заказ №{{ order.id }} оформлен — PixShop{% endblock %}
 
 {% block breadcrumbs %}
 <a href="{% url 'item_list' %}">Главная</a> → Подтверждение заказа
 {% endblock %}
 
 {% block content %}
-<div style="max-width: 700px; margin: 0 auto;">
-    <h2>ЗАКАЗ №{{ order.id }} ПРИНЯТ</h2>
-    <p>Статус: {{ order.status.name }}</p>
-    <p>Сумма: {{ order.total_price }} ₽</p>
-    <p>Дата: {{ order.created_at }}</p>
-    <h3>Состав заказа:</h3>
-    <ul>
-        {% for item in order.items.all %}
-            <li>{{ item.quantity }} x {{ item.item.name }} — {{ item.price }} ₽</li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'item_list' %}" class="btn-add">ПРОДОЛЖИТЬ ПОКУПКИ</a>
+<div class="order-conf-box">
+
+    <div class="order-conf-header">
+        <h2>✓ ЗАКАЗ №{{ order.id }} ПРИНЯТ</h2>
+    </div>
+
+    <div class="order-conf-body">
+
+        <dl class="order-meta">
+            <dt>СТАТУС</dt>
+            <dd>{{ order.status.name|upper }}</dd>
+            <dt>ДАТА</dt>
+            <dd>{{ order.created_at|date:"d.m.Y H:i" }}</dd>
+            <dt>ПОКУПАТЕЛЬ</dt>
+            <dd>{{ order.user.first_name }} {{ order.user.last_name }}</dd>
+            <dt>АДРЕС</dt>
+            <dd>{{ order.user.adress|default:"—" }}</dd>
+        </dl>
+
+        <div class="order-items-list">
+            <h3 style="margin-bottom:12px;">СОСТАВ ЗАКАЗА</h3>
+            {% for oi in order.items.all %}
+                <div class="order-item-row">
+                    <span>{{ oi.item.name|upper }}</span>
+                    <span>{{ oi.quantity }} × {{ oi.price }} ₽</span>
+                </div>
+            {% endfor %}
+            <div class="order-total-row">
+                <span>ИТОГО</span>
+                <span>{{ order.total_price }} ₽</span>
+            </div>
+        </div>
+
+        <div style="margin-top:28px; display:flex; gap:14px; flex-wrap:wrap;">
+            <a href="{% url 'item_list' %}" class="btn-add">ПРОДОЛЖИТЬ ПОКУПКИ</a>
+            <a href="{% url 'profile' %}" class="btn-add btn-primary">МОИ ЗАКАЗЫ</a>
+        </div>
+
+    </div>
 </div>
 {% endblock %}

@@ -1,0 +1,40 @@
+{% with images=item.get_all_images %}
+<div class="item-card" data-href="{% url 'item_detail' item.id %}">
+
+    <div class="item-image">
+        {% if images %}
+            {% for url in images %}
+                <img src="{{ url }}" alt="{{ item.name }}" loading="lazy"
+                     {% if forloop.first %}class="active"{% endif %}>
+            {% endfor %}
+        {% else %}
+            <div class="no-img">НЕТ ФОТО</div>
+        {% endif %}
+    </div>
+
+    <div class="item-body">
+        <a href="{% url 'item_detail' item.id %}" class="card-overlay-link"
+           tabindex="-1" aria-hidden="true"></a>
+
+        <div class="item-title">{{ item.name|upper }}</div>
+        <div class="item-price">{{ item.price }} ₽</div>
+
+        <div class="item-categories">
+            {% for cat in item.categories.all %}
+                <a href="{% url 'catalog' %}?category={{ cat.id }}"
+                   class="cat-tag">{{ cat.name|lower }}</a>
+            {% empty %}
+                <span class="cat-tag cat-tag--empty">без категории</span>
+            {% endfor %}
+        </div>
+
+        {% if item.quantity > 0 %}
+            <a href="{% url 'add_to_cart' item.id %}" class="btn-add btn-cart"
+               onclick="event.stopPropagation();">В КОРЗИНУ</a>
+        {% else %}
+            <span class="btn-add btn-cart btn-cart--disabled">НЕТ В НАЛИЧИИ</span>
+        {% endif %}
+    </div>
+
+</div>
+{% endwith %}

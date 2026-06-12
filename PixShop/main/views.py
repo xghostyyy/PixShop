@@ -1,25 +1,33 @@
 import json
+
 from django.contrib import messages
 from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+
 from .forms import PixPasswordChangeForm, ProfileUpdateForm, UserRegisterForm
 from .models import Category, Item, Order, Order_item, Status
 
 
-#  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-
 def _get_cart(request):
+    """Возвращает корзину из сессии. Ключи — строки, значения — int."""
     return request.session.get('cart', {})
 
 
 def _save_cart(request, cart):
+    """Сохраняет корзину и помечает сессию изменённой."""
     request.session['cart'] = cart
     request.session.modified = True
 
 
 def _cart_items_with_totals(cart):
+    """
+    По словарю корзины возвращает (cart_entries, total).
+
+    cart_entries — список dict с ключами: item, quantity, subtotal.
+    Один запрос к БД с prefetch категорий.
+    """
     if not cart:
         return [], 0
 
@@ -39,8 +47,6 @@ def _cart_items_with_totals(cart):
 
     return entries, total
 
-
-#  КАТАЛОГ / ТОВАРЫ
 
 def item_list(request):
     items = (
@@ -66,7 +72,7 @@ def catalog(request):
         'name_desc':  '-name',
         'price_asc':  'price',
         'price_desc': '-price',
-        'newest':     '-id', 
+        'newest':     '-id',     
     }
 
     categories = Category.objects.all()
@@ -89,22 +95,18 @@ def catalog(request):
     })
 
 
-#  КОРЗИНА
-
 def add_to_cart(request, item_id):
     item = get_object_or_404(Item, id=item_id, available=True)
     cart = _get_cart(request)
 
     current_qty = cart.get(str(item_id), 0)
 
-    # Проверка складского остатка
     if current_qty >= item.quantity:
         messages.error(
             request,
             f'Товар «{item.name}» недоступен в нужном количестве. '
             f'На складе: {item.quantity} шт.'
         )
-        # Возвращаем на страницу, с которой пришли, или на каталог
         return redirect(request.META.get('HTTP_REFERER', 'catalog'))
 
     cart[str(item_id)] = current_qty + 1
@@ -130,7 +132,6 @@ def update_cart_item(request, item_id):
 
         if quantity > 0:
             item = get_object_or_404(Item, id=item_id)
-            # Не даём выставить больше, чем есть на складе
             quantity = min(quantity, item.quantity)
             cart[str(item_id)] = quantity
         else:
@@ -194,8 +195,6 @@ def cart_count_api(request):
     return JsonResponse({'count': sum(cart.values())})
 
 
-#  ОФОРМЛЕНИЕ ЗАКАЗА
-
 @login_required
 def checkout(request):
     cart = _get_cart(request)
@@ -206,7 +205,7 @@ def checkout(request):
     items = list(
         Item.objects
         .filter(id__in=cart.keys(), available=True)
-        .select_for_update()   
+        .select_for_update() 
     )
 
     if not items:
@@ -214,7 +213,6 @@ def checkout(request):
         _save_cart(request, {})
         return redirect('catalog')
 
-    # Проверка остатков
     errors = []
     for item in items:
         needed = cart[str(item.id)]
@@ -228,7 +226,6 @@ def checkout(request):
             messages.error(request, err)
         return redirect('cart_detail')
 
-    # Создаём заказ 
     from django.db import transaction
 
     status_new, _ = Status.objects.get_or_create(name='Новый')
@@ -244,9 +241,7 @@ def checkout(request):
                 quantity=qty,
                 price=item.price,
             )
-            # Списываем со склада
             item.quantity -= qty
-            # Если товара не осталось — скрываем его
             if item.quantity <= 0:
                 item.quantity = 0
                 item.available = False
@@ -268,8 +263,6 @@ def order_conf(request, order_id):
     return render(request, 'main/order_conf.html', {'order': order})
 
 
-#  ПРОФИЛЬ
-
 @login_required
 def profile(request):
     user = request.user
@@ -285,17 +278,14 @@ def profile(request):
                 profile_form.save()
                 messages.success(request, 'Данные профиля обновлены.')
                 return redirect('profile')
-            # форма невалидна — отобразим с ошибками
 
         elif form_type == 'password':
             password_form = PixPasswordChangeForm(user=user, data=request.POST)
             if password_form.is_valid():
                 password_form.save()
-                # Обновляем хэш сессии, чтобы пользователь не вылетел
                 update_session_auth_hash(request, password_form.user)
                 messages.success(request, 'Пароль успешно изменён.')
                 return redirect('profile')
-            # форма невалидна — отобразим с ошибками
 
     orders = (
         user.orders
@@ -310,9 +300,6 @@ def profile(request):
         'orders': orders,
     })
 
-
-#  РЕГИСТРАЦИЯ
-
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
@@ -324,3 +311,13 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request, 'main/register.html', {'form': form})
+
+
+def offer(request):
+    return render(request, 'main/offer.html')
+
+def privacy(request):
+    return render(request, 'main/privacy.html')
+
+def contacts(request):
+    return render(request, 'main/contacts.html')
