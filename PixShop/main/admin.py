@@ -198,6 +198,9 @@ class OrderAdmin(admin.ModelAdmin):
     def status_badge(self, obj):
         palette = {
             'Новый': '#facc15',
+            'Оплачен': '#6b8cff',
+            'В доставке': '#38bdf8',
+            'Завершен': '#4ade80',
             'Выполнен': '#4ade80',
             'Отменён': '#e63946',
         }
