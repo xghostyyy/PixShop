@@ -3,6 +3,7 @@ import json
 from django.contrib import messages
 from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -202,35 +203,35 @@ def checkout(request):
         messages.error(request, 'Корзина пуста.')
         return redirect('cart_detail')
 
-    items = list(
-        Item.objects
-        .filter(id__in=cart.keys(), available=True)
-        .select_for_update() 
-    )
-
-    if not items:
-        messages.error(request, 'Все товары в корзине недоступны.')
-        _save_cart(request, {})
-        return redirect('catalog')
-
-    errors = []
-    for item in items:
-        needed = cart[str(item.id)]
-        if item.quantity < needed:
-            errors.append(
-                f'«{item.name}»: нужно {needed} шт., на складе {item.quantity} шт.'
-            )
-
-    if errors:
-        for err in errors:
-            messages.error(request, err)
-        return redirect('cart_detail')
-
-    from django.db import transaction
-
     status_new, _ = Status.objects.get_or_create(name='Новый')
 
+    # select_for_update() работает только внутри транзакции, поэтому весь
+    # блок (блокировка строк → проверка остатков → создание заказа) атомарен.
     with transaction.atomic():
+        items = list(
+            Item.objects
+            .filter(id__in=cart.keys(), available=True)
+            .select_for_update()
+        )
+
+        if not items:
+            messages.error(request, 'Все товары в корзине недоступны.')
+            _save_cart(request, {})
+            return redirect('catalog')
+
+        errors = []
+        for item in items:
+            needed = cart[str(item.id)]
+            if item.quantity < needed:
+                errors.append(
+                    f'«{item.name}»: нужно {needed} шт., на складе {item.quantity} шт.'
+                )
+
+        if errors:
+            for err in errors:
+                messages.error(request, err)
+            return redirect('cart_detail')
+
         order = Order.objects.create(user=request.user, status=status_new)
 
         for item in items:
@@ -254,12 +255,13 @@ def checkout(request):
     return redirect('order_conf', order_id=order.id)
 
 
+@login_required
 def order_conf(request, order_id):
-    order = get_object_or_404(
-        Order.objects.select_related('status', 'user')
-                     .prefetch_related('items__item'),
-        id=order_id,
-    )
+    orders = Order.objects.select_related('status', 'user').prefetch_related('items__item')
+    # Заказ доступен только его владельцу (персонал видит любой).
+    if not request.user.is_staff:
+        orders = orders.filter(user=request.user)
+    order = get_object_or_404(orders, id=order_id)
     return render(request, 'main/order_conf.html', {'order': order})
 
 

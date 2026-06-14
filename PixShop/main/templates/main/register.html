@@ -8,13 +8,20 @@
 {% endblock %}
 
 {% block content %}
-<div style="max-width: 600px; margin: 0 auto;">
+<div class="auth-card auth-card--wide">
     <h1>РЕГИСТРАЦИЯ</h1>
-    <form method="post" style="margin-top: 30px;">
+    {% if form.non_field_errors %}
+        <div class="form-errors">
+            {% for err in form.non_field_errors %}
+                <p class="error-msg">{{ err }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <form method="post" novalidate>
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn-add" style="margin-top: 20px;">ЗАРЕГИСТРИРОВАТЬСЯ</button>
+        <button type="submit" class="btn-add btn-primary" style="width: 100%; margin-top: 6px;">ЗАРЕГИСТРИРОВАТЬСЯ</button>
     </form>
-    <p style="margin-top: 20px; font-size: 0.6rem;">Уже есть аккаунт? <a href="{% url 'login' %}" style="color: white;">Войти</a></p>
+    <p class="auth-switch">Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
 </div>
 {% endblock %}

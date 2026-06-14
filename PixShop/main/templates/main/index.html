@@ -9,11 +9,16 @@
 
 {% block content %}
 <h2 style="font-size: 0.9rem; margin-bottom: 20px;">Подборка товаров</h2>
+{% if items %}
 <div class="items-grid">
     {% for item in items %}
         {% include 'main/item_card.html' with item=item %}
-    {% empty %}
-        <div class="empty-state">НЕТ ТОВАРОВ</div>
     {% endfor %}
 </div>
+{% else %}
+<div class="empty-state">
+    <p>ПОКА НЕТ ТОВАРОВ</p>
+    <a href="{% url 'catalog' %}" class="btn-add">ОТКРЫТЬ КАТАЛОГ</a>
+</div>
+{% endif %}
 {% endblock %}
