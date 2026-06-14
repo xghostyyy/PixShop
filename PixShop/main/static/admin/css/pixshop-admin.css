@@ -1,0 +1,238 @@
+/* ╔══════════════════════════════════════════════════════════╗
+   ║   PIXSHOP ADMIN — тёмная pixel-art тема для Django admin   ║
+   ║   Переопределяет CSS-переменные admin + точечные правила.  ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
+:root,
+html[data-theme="light"],
+html[data-theme="dark"] {
+    --primary:            #4169e1;
+    --primary-fg:         #ffffff;
+    --secondary:          #16161f;
+    --accent:             #6b8cff;
+
+    --body-fg:            #ddddf0;
+    --body-bg:            #111118;
+    --body-quiet-color:   #8888b5;
+    --body-loud-color:    #ffffff;
+
+    --header-color:       #ffffff;
+    --header-branding-color: #6b8cff;
+    --header-bg:          #16161f;
+    --header-link-color:  #ddddf0;
+
+    --breadcrumbs-fg:     #8888b5;
+    --breadcrumbs-link-fg: #6b8cff;
+    --breadcrumbs-bg:     #1a1a26;
+
+    --link-fg:            #6b8cff;
+    --link-hover-color:   #ffffff;
+    --link-selected-fg:   #8aa6ff;
+
+    --hairline-color:     #2a2a3a;
+    --border-color:       #2a2a3a;
+
+    --error-fg:           #ff8090;
+    --message-success-bg: rgba(74, 222, 128, .12);
+    --message-warning-bg: rgba(250, 204, 21, .12);
+    --message-error-bg:   rgba(230, 57, 70, .14);
+
+    --darkened-bg:        #16161f;
+    --selected-bg:        #1c1c28;
+    --selected-row:       rgba(65, 105, 225, .18);
+
+    --button-fg:          #ffffff;
+    --button-bg:          #4169e1;
+    --button-hover-bg:    #6b8cff;
+    --default-button-bg:  #4169e1;
+    --default-button-hover-bg: #6b8cff;
+    --close-button-bg:    #2a2a3a;
+    --close-button-hover-bg: #3a3a4f;
+    --delete-button-bg:   #e63946;
+    --delete-button-hover-bg: #a41515;
+
+    --object-tools-fg:    #ffffff;
+    --object-tools-bg:    #2a2a3a;
+    --object-tools-hover-bg: #4169e1;
+
+    --link-fg-hover: #ffffff;
+    color-scheme: dark;
+}
+
+body {
+    background:
+        repeating-linear-gradient(0deg, transparent, transparent 3px,
+            rgba(0, 0, 0, .05) 3px, rgba(0, 0, 0, .05) 4px),
+        var(--body-bg);
+}
+
+/* ── Шапка / брендинг ─────────────────────────────────────── */
+#header {
+    border-bottom: 3px solid var(--primary);
+    box-shadow: 0 3px 0 rgba(0, 0, 0, .4);
+    padding: 14px 40px;
+}
+#site-name a { text-decoration: none; line-height: 1.2; }
+.px-logo {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1.15rem;
+    color: #fff;
+    background: var(--primary);
+    padding: 8px 12px;
+    display: inline-block;
+    box-shadow: 3px 3px 0 #1a3080;
+    letter-spacing: 2px;
+}
+.px-sub {
+    display: block;
+    margin-top: 8px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: .5rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+}
+
+/* ── Заголовки модулей / секций ───────────────────────────── */
+.module h2, .module caption,
+.inline-group h2,
+#content h1, .dashboard #content h1 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: .7rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.module caption,
+.inline-group .tabular caption {
+    background: var(--primary);
+    color: #fff;
+}
+.module h2 {
+    background: var(--darkened-bg);
+    border-bottom: 2px solid var(--primary);
+    color: var(--accent);
+    padding: 10px 12px;
+}
+
+.module {
+    border: 2px solid var(--border-color);
+    background: var(--darkened-bg);
+    border-radius: 0;
+}
+
+/* ── Кнопки (квадратные, с «жёсткой» тенью при наведении) ── */
+.button, input[type=submit], input[type=button],
+.submit-row input, a.button {
+    border-radius: 0;
+    border: 2px solid transparent;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    transition: transform .08s, box-shadow .08s, background .08s;
+}
+.button:hover, input[type=submit]:hover, input[type=button]:hover,
+.submit-row input:hover, a.button:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 3px 3px 0 var(--accent);
+}
+.submit-row input.default {
+    border-color: var(--accent);
+}
+.deletelink, .deletelink-box a {
+    border-radius: 0 !important;
+}
+
+/* ── Object tools (кнопка «Добавить» и пр.) ───────────────── */
+.object-tools a {
+    border-radius: 0;
+    text-transform: uppercase;
+    font-size: .7rem;
+    letter-spacing: .5px;
+    border: 2px solid transparent;
+    transition: transform .08s, box-shadow .08s;
+}
+.object-tools a:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 3px 3px 0 var(--accent);
+}
+
+/* ── Таблицы результатов ──────────────────────────────────── */
+#changelist table thead th {
+    background: var(--darkened-bg);
+    border-bottom: 2px solid var(--primary);
+}
+#changelist table thead th a { color: var(--accent); }
+#result_list tbody tr:hover > * {
+    background: var(--selected-row);
+}
+#changelist-filter {
+    background: var(--darkened-bg);
+    border-left: 2px solid var(--primary);
+}
+#changelist-filter h2 {
+    background: var(--primary);
+    color: #fff;
+}
+#changelist-filter li.selected a { color: var(--accent); }
+
+/* ── Поля форм ────────────────────────────────────────────── */
+input, textarea, select, .vTextField {
+    background: var(--body-bg);
+    color: var(--body-fg);
+    border: 2px solid var(--border-color);
+    border-radius: 0;
+}
+input:focus, textarea:focus, select:focus, .vTextField:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(65, 105, 225, .25);
+}
+fieldset.module { border: 2px solid var(--border-color); }
+
+/* ── Хлебные крошки ───────────────────────────────────────── */
+div.breadcrumbs {
+    border-bottom: 2px solid var(--border-color);
+    font-size: .8rem;
+}
+
+/* ── Боковая навигация приложений ─────────────────────────── */
+.app-list .section,
+#nav-sidebar .app-list a:hover {
+    border-radius: 0;
+}
+#nav-sidebar { border-right: 2px solid var(--border-color); }
+
+/* ── Пагинация ────────────────────────────────────────────── */
+.paginator a:link, .paginator a:visited {
+    background: var(--darkened-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+}
+.paginator a:hover { background: var(--primary); color: #fff; }
+.paginator .this-page {
+    background: var(--primary);
+    color: #fff;
+    padding: 2px 6px;
+}
+
+/* ── Сообщения ────────────────────────────────────────────── */
+ul.messagelist li {
+    border-radius: 0;
+    border-left: 4px solid var(--primary);
+}
+ul.messagelist li.success { border-left-color: #4ade80; }
+ul.messagelist li.warning { border-left-color: #facc15; }
+ul.messagelist li.error   { border-left-color: #e63946; }
+
+/* ── Страница входа ───────────────────────────────────────── */
+body.login #container {
+    border: 3px solid var(--primary);
+    box-shadow: 6px 6px 0 rgba(0, 0, 0, .5);
+    border-radius: 0;
+    background: var(--darkened-bg);
+}
+body.login #header { border-radius: 0; }
+body.login .px-sub { text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+}

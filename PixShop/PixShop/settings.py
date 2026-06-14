@@ -31,13 +31,15 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # 'main' стоит выше admin, чтобы переопределять шаблоны админки
+    # (templates/admin/base_site.html — кастомная тема PixShop).
+    'main',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main',
 ]
 
 MIDDLEWARE = [
