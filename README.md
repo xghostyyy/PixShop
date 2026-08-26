@@ -70,7 +70,7 @@ The application separates business logic, presentation and data management to ke
 ### Clone the repository:
 
 ```bash
-git clone https://github.com/xghostyyy/PixShop.git
+git clone https://github.com/xghostyyy/pixshop-django-ecommerce.git
 ```
 ### Navigate to the project:
 
